@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Module 2 — Database with MySQL & Python</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS  —  Database Navy + Teal
+══════════════════════════════════════════ */
+:root{
+  --bg:      #070c18;
+  --s1:      #0c1525;
+  --s2:      #101d30;
+  --card:    #12213a;
+  --bdr:     #1e3050;
+  --bdr2:    #263d62;
+  --txt:     #dde6f8;
+  --body:    #8898b8;
+  --muted:   #3d5070;
+
+  --teal:    #00c9a7;   /* primary accent */
+  --amber:   #f59e0b;   /* SQL keywords */
+  --indigo:  #818cf8;   /* Python */
+  --green:   #34d399;   /* results / success */
+  --red:     #f87171;   /* warnings / errors */
+  --pink:    #f472b6;   /* strings */
+  --sky:     #38bdf8;   /* column names */
+
+  --code:    #040810;
+}
+
+/* ══════════════════════════════════════════
+   BASE
+══════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:'Inter',sans-serif;
+  font-weight:400;
+  line-height:1.8;
+  font-size:15px;
+}
+
+/* ══════════════════════════════════════════
+   MASTHEAD
+══════════════════════════════════════════ */
+.mast{
+  background:linear-gradient(150deg, #050a15 0%, #0a1830 60%, #060e20 100%);
+  border-bottom:1px solid var(--bdr);
+  padding:52px 56px 44px;
+  position:relative;overflow:hidden;
+}
+.mast::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 600px 300px at 80% 50%, rgba(0,201,167,.04), transparent),
+    radial-gradient(ellipse 400px 400px at 20% 80%, rgba(129,140,248,.03), transparent);
+  pointer-events:none;
+}
+/* animated grid lines */
+.mast::after{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,201,167,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,201,167,.04) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+.mast-inner{
+  position:relative;z-index:1;
+  max-width:1080px;margin:0 auto;
+  display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end;
+}
+.mast-crumb{
+  font-family:'Fira Code',monospace;font-size:10px;
+  letter-spacing:3px;color:var(--muted);text-transform:uppercase;
+  margin-bottom:16px;
+}
+.mast h1{
+  font-family:'Sora',sans-serif;
+  font-size:clamp(28px,4vw,52px);
+  font-weight:800;line-height:1.05;
+  letter-spacing:-1.5px;color:#fff;
+  margin-bottom:14px;
+}
+.mast h1 .hl{color:var(--teal);}
+.mast-sub{
+  font-size:14px;color:var(--body);font-weight:300;
+  max-width:520px;line-height:1.7;margin-bottom:24px;
+}
+.mast-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.mpill{
+  font-family:'Fira Code',monospace;font-size:10px;
+  padding:4px 12px;border-radius:20px;
+  border:1px solid var(--bdr2);color:var(--body);
+}
+.mpill.t{color:var(--teal);border-color:rgba(0,201,167,.3);background:rgba(0,201,167,.05);}
+.mpill.a{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05);}
+.mpill.i{color:var(--indigo);border-color:rgba(129,140,248,.3);background:rgba(129,140,248,.05);}
+.mast-meta{
+  font-family:'Fira Code',monospace;font-size:11px;
+  color:var(--muted);text-align:right;line-height:2;
+}
+.mast-meta span{color:var(--bdr2);}
+
+/* ══════════════════════════════════════════
+   TOPIC NAV
+══════════════════════════════════════════ */
+.tnav{
+  background:var(--s1);
+  border-bottom:1px solid var(--bdr);
+  position:sticky;top:0;z-index:100;
+}
+.tnav-inner{
+  max-width:1080px;margin:0 auto;
+  display:flex;overflow-x:auto;
+}
+.tb{
+  display:flex;align-items:center;gap:10px;
+  padding:15px 24px;border:none;
+  background:transparent;cursor:pointer;
+  color:var(--muted);
+  font-family:'Fira Code',monospace;font-size:11px;
+  letter-spacing:.5px;text-transform:uppercase;
+  border-bottom:2px solid transparent;
+  transition:all .2s;white-space:nowrap;
+}
+.tb:hover{color:var(--body);}
+.tb.on{color:var(--teal);border-bottom-color:var(--teal);}
+.tb-num{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:600;
+  background:var(--bdr);color:var(--muted);
+  flex-shrink:0;transition:all .2s;
+}
+.tb.on .tb-num{background:rgba(0,201,167,.15);color:var(--teal);}
+
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.wrap{max-width:1080px;margin:0 auto;padding:0 40px 80px;}
+.sec{display:none;}.sec.on{display:block;}
+
+/* ══════════════════════════════════════════
+   TOPIC HEADER
+══════════════════════════════════════════ */
+.th{
+  padding:52px 0 36px;
+  border-bottom:1px solid var(--bdr);
+  margin-bottom:48px;
+  display:flex;gap:28px;align-items:flex-start;
+}
+.th-num{
+  font-family:'Sora',sans-serif;
+  font-size:80px;font-weight:800;
+  color:rgba(255,255,255,.04);line-height:1;
+  letter-spacing:-4px;user-select:none;flex-shrink:0;
+}
+.th-meta{}
+.th-eye{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--teal);text-transform:uppercase;
+  margin-bottom:10px;
+}
+.th-title{
+  font-family:'Sora',sans-serif;
+  font-size:clamp(22px,3vw,38px);
+  font-weight:800;letter-spacing:-0.5px;
+  color:#fff;line-height:1.1;margin-bottom:10px;
+}
+.th-sub{
+  font-size:14px;color:var(--body);font-weight:300;
+  max-width:640px;line-height:1.75;
+}
+.th-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.ttag{
+  font-family:'Fira Code',monospace;font-size:10px;
+  padding:3px 10px;border-radius:2px;
+  border:1px solid var(--bdr2);color:var(--muted);
+}
+
+/* ══════════════════════════════════════════
+   FEYNMAN
+══════════════════════════════════════════ */
+.fey{
+  background:linear-gradient(135deg,rgba(0,201,167,.06),rgba(0,201,167,.02));
+  border:1px solid rgba(0,201,167,.15);
+  border-left:3px solid var(--teal);
+  border-radius:0 6px 6px 0;
+  padding:24px 28px;margin-bottom:36px;
+}
+.fey-lbl{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--teal);text-transform:uppercase;
+  margin-bottom:10px;
+}
+.fey p{
+  font-size:15px;color:var(--body);line-height:1.9;font-weight:300;
+}
+.fey strong{color:var(--txt);font-weight:600;}
+.fey code{
+  font-family:'Fira Code',monospace;font-size:12px;
+  background:rgba(0,201,167,.1);color:var(--teal);
+  padding:2px 7px;border-radius:3px;
+}
+
+/* ══════════════════════════════════════════
+   DIALOGUE
+══════════════════════════════════════════ */
+.dlbl{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--sky);text-transform:uppercase;
+  margin:36px 0 14px;
+}
+.chat{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.bb{display:flex;gap:12px;align-items:flex-start;}
+.bb.T{flex-direction:row;}
+.bb.S{flex-direction:row-reverse;}
+.av{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fira Code',monospace;font-size:10px;font-weight:600;
+  flex-shrink:0;
+}
+.av.T{background:rgba(56,189,248,.1);color:var(--sky);border:1px solid rgba(56,189,248,.2);}
+.av.S{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2);}
+.ms{max-width:76%;padding:12px 16px;font-size:14px;line-height:1.75;border-radius:6px;}
+.bb.T .ms{background:var(--s2);border:1px solid var(--bdr);border-top-left-radius:2px;color:var(--body);}
+.bb.S .ms{background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);border-top-right-radius:2px;color:#a7f3d0;text-align:right;}
+.ms strong{color:var(--teal);}
+.bb.S .ms strong{color:var(--green);}
+
+/* ══════════════════════════════════════════
+   SQL QUERY ANATOMY  (signature element)
+══════════════════════════════════════════ */
+.anatomy{
+  margin:28px 0 36px;
+  overflow-x:auto;
+}
+.anatomy-label{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--muted);text-transform:uppercase;
+  margin-bottom:12px;
+}
+.anatomy-row{
+  display:flex;align-items:stretch;gap:0;
+  border:1px solid var(--bdr2);border-radius:6px;overflow:hidden;
+  min-width:max-content;
+}
+.ac{display:flex;flex-direction:column;}
+.ac-kw{
+  background:rgba(0,201,167,.12);
+  color:var(--teal);
+  font-family:'Fira Code',monospace;font-size:14px;font-weight:600;
+  padding:12px 18px 8px;
+  border-right:1px solid var(--bdr2);
+}
+.ac-val{
+  background:rgba(245,158,11,.08);
+  color:var(--amber);
+  font-family:'Fira Code',monospace;font-size:13px;
+  padding:8px 18px 12px;
+  border-right:1px solid var(--bdr2);
+  flex:1;
+}
+.ac-hint{
+  font-size:10px;color:var(--muted);
+  font-family:'Fira Code',monospace;
+  padding:4px 18px 8px;
+  letter-spacing:.5px;
+  border-right:1px solid var(--bdr2);
+  background:rgba(255,255,255,.02);
+}
+.ac:last-child .ac-kw,.ac:last-child .ac-val,.ac:last-child .ac-hint{border-right:none;}
+.anatomy-full{
+  background:var(--code);
+  border:1px solid var(--bdr);border-radius:6px;
+  padding:16px 20px;margin-top:12px;
+  font-family:'Fira Code',monospace;font-size:14px;
+  color:var(--txt);letter-spacing:.3px;
+}
+
+/* ══════════════════════════════════════════
+   CODE BLOCKS
+══════════════════════════════════════════ */
+.cb{
+  background:var(--code);
+  border:1px solid var(--bdr);border-radius:8px;
+  overflow:hidden;margin:20px 0;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+}
+.cb-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px;background:#030610;
+  border-bottom:1px solid var(--bdr);
+}
+.dots{display:flex;gap:6px;}
+.d{width:11px;height:11px;border-radius:50%;}
+.d:nth-child(1){background:#f87171;}
+.d:nth-child(2){background:#fbbf24;}
+.d:nth-child(3){background:#4ade80;}
+.cb-name{
+  font-family:'Fira Code',monospace;font-size:10px;
+  color:var(--muted);letter-spacing:.5px;
+}
+.cb-body{
+  padding:22px 24px;
+  font-family:'Fira Code',monospace;
+  font-size:13px;line-height:2.1;
+  color:#b8c8e8;overflow-x:auto;
+}
+/* SQL syntax */
+.sk{color:var(--teal);font-weight:600;}       /* SQL keyword */
+.st{color:var(--amber);}                       /* table name */
+.sc{color:var(--sky);}                         /* column */
+.ss{color:var(--green);}                       /* string */
+.sn{color:#fb923c;}                            /* number */
+.sf{color:var(--indigo);}                      /* function */
+.scm{color:var(--muted);font-style:italic;}    /* comment */
+/* Python syntax */
+.pk{color:#c084fc;}                            /* py keyword */
+.pf{color:var(--sky);}                         /* py function */
+.ps{color:var(--green);}                       /* py string */
+.pn{color:#fb923c;}                            /* py number */
+.pcm{color:var(--muted);font-style:italic;}    /* py comment */
+.pcl{color:var(--amber);}                      /* py class */
+
+/* LINE ANNOTATIONS  */
+.ann-block{
+  background:var(--s1);
+  border:1px solid var(--bdr);border-top:none;
+  border-radius:0 0 8px 8px;
+  padding:16px 24px;
+}
+.ann-title{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+  margin-bottom:12px;
+}
+.ann-item{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:7px 0;border-bottom:1px solid var(--bdr);
+  font-size:13px;
+}
+.ann-item:last-child{border:none;}
+.ann-n{
+  font-family:'Fira Code',monospace;font-size:11px;
+  color:var(--teal);font-weight:600;
+  background:rgba(0,201,167,.1);
+  padding:1px 7px;border-radius:3px;
+  flex-shrink:0;margin-top:2px;
+}
+.ann-t{color:var(--body);line-height:1.65;}
+.ann-t strong{color:var(--txt);}
+.ann-t code{
+  font-family:'Fira Code',monospace;font-size:11px;
+  background:rgba(255,255,255,.06);
+  padding:1px 6px;border-radius:3px;color:var(--sky);
+}
+
+/* ══════════════════════════════════════════
+   CALLOUT BOXES
+══════════════════════════════════════════ */
+.box{border-radius:4px;padding:16px 20px;font-size:14px;
+  margin:18px 0;line-height:1.8;border-left:3px solid;}
+.box.info{background:rgba(56,189,248,.06);border-color:var(--sky);color:#a0c8e8;}
+.box.info::before{content:'💡  ';}
+.box.analogy{background:rgba(245,158,11,.06);border-color:var(--amber);color:#d4b870;}
+.box.analogy strong{color:var(--amber);}
+.box.analogy::before{content:'🧠  ';}
+.box.warn{background:rgba(248,113,113,.06);border-color:var(--red);color:#e0a0a0;}
+.box.warn::before{content:'⚠️  ';}
+.box.win{background:rgba(52,211,153,.06);border-color:var(--green);color:#90d8b8;}
+.box.win::before{content:'✅  ';}
+.box.sql{background:rgba(0,201,167,.05);border-color:var(--teal);color:#90d8c8;}
+.box.sql::before{content:'🗄️  ';}
+
+/* ══════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════ */
+.sdiv{
+  display:flex;align-items:center;gap:16px;
+  margin:44px 0 24px;
+}
+.sd-txt{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--teal);text-transform:uppercase;
+  white-space:nowrap;
+}
+.sd-line{flex:1;height:1px;background:var(--bdr);}
+
+/* ══════════════════════════════════════════
+   CONCEPT GRID
+══════════════════════════════════════════ */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0 32px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:20px 0 32px;}
+.gc{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:6px;padding:20px;
+  border-top:2px solid var(--gc-c, var(--teal));
+}
+.gc-icon{font-size:24px;margin-bottom:10px;}
+.gc-name{
+  font-family:'Sora',sans-serif;font-size:15px;font-weight:700;
+  color:#fff;margin-bottom:4px;
+}
+.gc-tag{
+  font-family:'Fira Code',monospace;font-size:10px;
+  color:var(--muted);display:block;margin-bottom:10px;
+}
+.gc-list{list-style:none;font-size:12px;color:var(--body);}
+.gc-list li{padding:3px 0;border-bottom:1px solid var(--bdr);}
+.gc-list li:last-child{border:none;}
+.gc-list li::before{content:'→ ';color:var(--teal);}
+
+/* ══════════════════════════════════════════
+   REFERENCE TABLE
+══════════════════════════════════════════ */
+.rtbl{
+  width:100%;border-collapse:collapse;
+  font-size:13px;margin:16px 0 28px;
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:6px;overflow:hidden;
+}
+.rtbl th{
+  background:#050a15;color:var(--muted);
+  padding:11px 16px;text-align:left;
+  font-family:'Fira Code',monospace;
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+}
+.rtbl td{
+  padding:11px 16px;border-bottom:1px solid var(--bdr);
+  color:var(--body);vertical-align:top;
+}
+.rtbl tr:last-child td{border:none;}
+.rtbl tr:hover td{background:rgba(255,255,255,.02);}
+.rtbl td:first-child{
+  font-family:'Fira Code',monospace;
+  font-size:13px;color:var(--teal);font-weight:500;
+}
+.badge{
+  display:inline-block;font-family:'Fira Code',monospace;
+  font-size:10px;padding:2px 8px;border-radius:2px;
+}
+.bg-t{background:rgba(0,201,167,.1);color:var(--teal);}
+.bg-a{background:rgba(245,158,11,.1);color:var(--amber);}
+.bg-r{background:rgba(248,113,113,.1);color:var(--red);}
+.bg-g{background:rgba(52,211,153,.1);color:var(--green);}
+
+/* ══════════════════════════════════════════
+   PROJECT BANNER
+══════════════════════════════════════════ */
+.proj{
+  background:var(--s2);
+  border:1px solid var(--bdr2);
+  border-left:4px solid var(--teal);
+  border-radius:0 6px 6px 0;
+  padding:24px 28px;margin:36px 0;
+}
+.proj-lbl{
+  font-family:'Fira Code',monospace;font-size:9px;
+  letter-spacing:3px;color:var(--teal);text-transform:uppercase;
+  margin-bottom:8px;
+}
+.proj-title{
+  font-family:'Sora',sans-serif;font-size:18px;
+  font-weight:700;color:#fff;margin-bottom:6px;
+}
+.proj-desc{font-size:14px;color:var(--body);line-height:1.7;}
+
+/* ══════════════════════════════════════════
+   QUIZ
+══════════════════════════════════════════ */
+.qwrap{
+  margin-top:44px;
+  border-top:1px solid var(--bdr2);
+  padding-top:28px;
+}
+.q-title{
+  font-family:'Sora',sans-serif;
+  font-size:18px;font-weight:700;color:#fff;
+  margin-bottom:4px;
+}
+.q-sub{
+  font-family:'Fira Code',monospace;font-size:10px;
+  color:var(--muted);margin-bottom:20px;
+  letter-spacing:1px;
+}
+.qi{margin-bottom:10px;}
+.qr{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 18px;
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:6px;cursor:pointer;
+  transition:border-color .18s;
+  font-size:14px;color:var(--body);
+}
+.qr:hover{border-color:var(--amber);}
+.qr.open{border-color:var(--green);border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.qnum{
+  font-family:'Fira Code',monospace;font-size:10px;
+  color:var(--muted);margin-top:3px;flex-shrink:0;
+}
+.qtx{flex:1;}
+.qarr{color:var(--muted);font-size:14px;transition:transform .2s;flex-shrink:0;margin-top:2px;}
+.qr.open .qarr{transform:rotate(90deg);color:var(--green);}
+.qa{
+  display:none;padding:14px 18px;
+  background:rgba(52,211,153,.05);
+  border:1px solid rgba(52,211,153,.15);border-top:none;
+  border-radius:0 0 6px 6px;
+  font-size:14px;color:#90d8b0;line-height:1.8;
+}
+.qa.open{display:block;}
+.qa strong{color:var(--green);}
+.qa code{
+  font-family:'Fira Code',monospace;font-size:11px;
+  background:rgba(52,211,153,.1);padding:1px 6px;border-radius:3px;
+}
+
+/* JOIN VISUAL */
+.join-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:20px 0 28px;}
+.jc{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:6px;padding:18px 20px;
+}
+.jc-name{
+  font-family:'Sora',sans-serif;font-size:14px;
+  font-weight:700;color:#fff;margin-bottom:6px;
+}
+.jc-venn{
+  display:flex;align-items:center;justify-content:center;
+  margin:10px 0;font-size:28px;
+  gap:0;
+}
+.jc-desc{font-size:12px;color:var(--body);line-height:1.6;}
+.jc-ex{
+  font-family:'Fira Code',monospace;font-size:11px;
+  color:var(--muted);margin-top:8px;
+  background:var(--s2);padding:6px 10px;border-radius:3px;
+}
+
+/* CONNECTION FLOW */
+.conn-flow{
+  display:flex;align-items:center;justify-content:center;
+  gap:0;margin:24px 0;flex-wrap:wrap;
+}
+.cf-box{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:6px;padding:12px 18px;text-align:center;
+}
+.cf-icon{font-size:22px;margin-bottom:4px;}
+.cf-name{font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:#fff;}
+.cf-tag{font-family:'Fira Code',monospace;font-size:10px;color:var(--muted);}
+.cf-arrow{
+  padding:0 12px;color:var(--teal);font-size:22px;
+}
+
+footer{
+  background:var(--s1);border-top:1px solid var(--bdr);
+  padding:24px 40px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.ft{font-family:'Fira Code',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;}
+
+@media(max-width:680px){
+  .mast{padding:36px 24px 28px;}.mast-meta{display:none;}
+  .wrap{padding:0 20px 56px;}
+  .th{flex-direction:column;gap:0;}.th-num{display:none;}
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .join-grid{grid-template-columns:1fr;}
+  .anatomy-row{flex-direction:column;}
+  footer{padding:16px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ MASTHEAD ══ -->
+<header class="mast">
+  <div class="mast-inner">
+    <div>
+      <div class="mast-crumb">Python Full Stack · Module 2 · Days 4–5</div>
+      <h1>Database with<br/><span class="hl">MySQL</span> &amp; Python</h1>
+      <p class="mast-sub">SQL from scratch, database joins, connecting Python to MySQL, and lightweight SQLite — everything explained line by line.</p>
+      <div class="mast-pills">
+        <div class="mpill t">SQL Fundamentals</div>
+        <div class="mpill a">Joins &amp; Views</div>
+        <div class="mpill i">Python + MySQL</div>
+        <div class="mpill">SQLite</div>
+        <div class="mpill">10 hrs · Days 4–5</div>
+      </div>
+    </div>
+    <div class="mast-meta">
+      <span>Topics</span> 2.1 · 2.2 · 2.3 · 2.4<br/>
+      <span>Hours</span> 10 hrs total<br/>
+      <span>Tools</span> MySQL · Python · sqlite3<br/>
+      <span>Partner</span> Ethnus<br/>
+      <span>College</span> Mother Teresa
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════ TOPIC NAV ══ -->
+<nav class="tnav">
+  <div class="tnav-inner">
+    <button class="tb on" onclick="show('t1',this)">
+      <span class="tb-num">2.1</span>SQL Fundamentals
+    </button>
+    <button class="tb" onclick="show('t2',this)">
+      <span class="tb-num">2.2</span>Joins, Views &amp; Procedures
+    </button>
+    <button class="tb" onclick="show('t3',this)">
+      <span class="tb-num">2.3</span>Python + MySQL
+    </button>
+    <button class="tb" onclick="show('t4',this)">
+      <span class="tb-num">2.4</span>SQLite
+    </button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ████████████████  2.1 SQL FUNDAMENTALS  ████████████████ -->
+<section id="t1" class="sec on">
+
+  <div class="th">
+    <div class="th-num">2.1</div>
+    <div class="th-meta">
+      <div class="th-eye">Topic 2.1 · 3 Hours</div>
+      <div class="th-title">SQL Fundamentals</div>
+      <div class="th-sub">DDL, DML, DQL — the three families of SQL. CREATE, INSERT, UPDATE, DELETE, SELECT, WHERE, ORDER BY, GROUP BY. The language every backend developer speaks.</div>
+      <div class="th-tags">
+        <span class="ttag">DDL</span><span class="ttag">DML</span><span class="ttag">DQL</span>
+        <span class="ttag">CREATE</span><span class="ttag">INSERT</span><span class="ttag">SELECT</span>
+        <span class="ttag">WHERE</span><span class="ttag">GROUP BY</span><span class="ttag">ORDER BY</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fey">
+    <div class="fey-lbl">⚗ Feynman — What is a Database?</div>
+    <p>Imagine you're running a school with 500 students. You could store everything in Excel sheets — but if you want <em>"all students who scored above 80 in Python AND are in the CS department"</em>, you'd have to do that manually. A <strong>database</strong> is an organised collection of data, and <strong>SQL</strong> (Structured Query Language) is the language you use to talk to it. You ask questions like <em>"give me all students from Chennai"</em> and the database answers instantly — even if there are 10 million students. SQL is not a programming language — it's a <strong>query language</strong>. You describe what you want, not how to get it.</p>
+  </div>
+
+  <div class="dlbl">🗣 Socratic Dialogue — Before Writing a Single Query</div>
+  <div class="chat">
+    <div class="bb T"><div class="av T">T</div><div class="ms">You're building a college app. Where do you store 500 students' data — their names, marks, departments?</div></div>
+    <div class="bb S"><div class="av S">S</div><div class="ms">In a list? Or maybe a file?</div></div>
+    <div class="bb T"><div class="av T">T</div><div class="ms">A list works for 10 students. What if I need everyone who scored above 80 in exactly 3 subjects and is in the 3rd year? How fast can a Python list do that?</div></div>
+    <div class="bb S"><div class="av S">S</div><div class="ms">Slowly… you'd loop through everything.</div></div>
+    <div class="bb T"><div class="av T">T</div><div class="ms">Right. A database is built specifically for that — it can answer that question across millions of rows in milliseconds. That's why every web app — Instagram, YouTube, your college portal — runs on a database. Now — what do you think a "table" in a database looks like?</div></div>
+    <div class="bb S"><div class="av S">S</div><div class="ms">Like a spreadsheet? Rows and columns?</div></div>
+    <div class="bb T"><div class="av T">T</div><div class="ms">Exactly. Each table is like one Excel sheet. Each row is one record. Each column is one attribute. And <strong>SQL</strong> is how you read, write, update, and delete those records.</div></div>
+  </div>
+
+  <!-- SQL FAMILIES -->
+  <div class="sdiv"><span class="sd-txt">The Three SQL Families</span><div class="sd-line"></div></div>
+
+  <div class="grid3">
+    <div class="gc" style="--gc-c:#00c9a7">
+      <div class="gc-icon">🏗️</div>
+      <div class="gc-name">DDL</div>
+      <span class="gc-tag">Data Definition Language</span>
+      <ul class="gc-list">
+        <li><strong>CREATE</strong> — make a table</li>
+        <li><strong>ALTER</strong> — modify a table</li>
+        <li><strong>DROP</strong> — delete a table</li>
+        <li><strong>TRUNCATE</strong> — empty a table</li>
+      </ul>
+    </div>
+    <div class="gc" style="--gc-c:#f59e0b">
+      <div class="gc-icon">✏️</div>
+      <div class="gc-name">DML</div>
+      <span class="gc-tag">Data Manipulation Language</span>
+      <ul class="gc-list">
+        <li><strong>INSERT</strong> — add rows</li>
+        <li><strong>UPDATE</strong> — change rows</li>
+        <li><strong>DELETE</strong> — remove rows</li>
+      </ul>
+    </div>
+    <div class="gc" style="--gc-c:#818cf8">
+      <div class="gc-icon">🔍</div>
+      <div class="gc-name">DQL</div>
+      <span class="gc-tag">Data Query Language</span>
+      <ul class="gc-list">
+        <li><strong>SELECT</strong> — read data</li>
+        <li><strong>WHERE</strong> — filter rows</li>
+        <li><strong>ORDER BY</strong> — sort results</li>
+        <li><strong>GROUP BY</strong> — aggregate data</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ANATOMY: SELECT -->
+  <div class="anatomy">
+    <div class="anatomy-label">// Query Anatomy — Read this like a sentence</div>
+    <div class="anatomy-row">
+      <div class="ac">
+        <div class="ac-kw">SELECT</div>
+        <div class="ac-val">name, age, marks</div>
+        <div class="ac-hint">WHAT to show</div>
+      </div>
+      <div class="ac">
+        <div class="ac-kw">FROM</div>
+        <div class="ac-val">students</div>
+        <div class="ac-hint">WHICH table</div>
+      </div>
+      <div class="ac">
+        <div class="ac-kw">WHERE</div>
+        <div class="ac-val">marks &gt; 75</div>
+        <div class="ac-hint">FILTER rows</div>
+      </div>
+      <div class="ac">
+        <div class="ac-kw">ORDER BY</div>
+        <div class="ac-val">marks DESC</div>
+        <div class="ac-hint">SORT results</div>
+      </div>
+    </div>
+    <div class="anatomy-full">SELECT name, age, marks &nbsp; FROM students &nbsp; WHERE marks &gt; 75 &nbsp; ORDER BY marks DESC;</div>
+  </div>
+  <div class="box analogy"><strong>Read SQL like English:</strong> "Show me the name, age, and marks — from the students table — but only where marks are above 75 — sorted from highest to lowest." SQL is designed to be readable as a request, not as code logic.</div>
+
+  <!-- DDL -->
+  <div class="sdiv"><span class="sd-txt">DDL — Building the Structure</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">ddl_create.sql</div></div>
+    <div class="cb-body">
+<span class="scm">-- ─────────────────────────────────────────────────────</span>
+<span class="scm">-- First, create the database itself (a container for tables)</span>
+<span class="scm">-- ─────────────────────────────────────────────────────</span>
+<span class="sk">CREATE DATABASE</span> <span class="st">school_db</span>;       <span class="scm">-- ① Create a new database called school_db</span>
+
+<span class="sk">USE</span> <span class="st">school_db</span>;                    <span class="scm">-- ② Switch to working inside school_db</span>
+
+<span class="scm">-- Create the students table with column definitions</span>
+<span class="sk">CREATE TABLE</span> <span class="st">students</span> (            <span class="scm">-- ③ Create a table named students</span>
+    <span class="sc">id</span>         <span class="sf">INT</span> <span class="sk">AUTO_INCREMENT</span> <span class="sk">PRIMARY KEY</span>, <span class="scm">-- ④ Unique ID, auto-counts up, main identifier</span>
+    <span class="sc">name</span>       <span class="sf">VARCHAR</span>(<span class="sn">100</span>) <span class="sk">NOT NULL</span>,           <span class="scm">-- ⑤ Text up to 100 chars, cannot be empty</span>
+    <span class="sc">age</span>        <span class="sf">INT</span>,                               <span class="scm">-- ⑥ Whole number (no decimal)</span>
+    <span class="sc">department</span> <span class="sf">VARCHAR</span>(<span class="sn">50</span>),                       <span class="scm">-- ⑦ Text up to 50 chars</span>
+    <span class="sc">marks</span>      <span class="sf">DECIMAL</span>(<span class="sn">5</span>,<span class="sn">2</span>),                      <span class="scm">-- ⑧ Number with 5 digits, 2 decimal places</span>
+    <span class="sc">city</span>       <span class="sf">VARCHAR</span>(<span class="sn">50</span>) <span class="sk">DEFAULT</span> <span class="ss">'Chennai'</span>,      <span class="scm">-- ⑨ Optional: default value if not given</span>
+    <span class="sc">enrolled_on</span> <span class="sf">DATE</span>                               <span class="scm">-- ⑩ Date format: YYYY-MM-DD</span>
+);
+
+<span class="scm">-- Modify an existing table (add a new column)</span>
+<span class="sk">ALTER TABLE</span> <span class="st">students</span>
+    <span class="sk">ADD COLUMN</span> <span class="sc">email</span> <span class="sf">VARCHAR</span>(<span class="sn">150</span>) <span class="sk">UNIQUE</span>;        <span class="scm">-- ⑪ Add email column, no two students can share it</span>
+
+<span class="scm">-- Remove a column you no longer need</span>
+<span class="sk">ALTER TABLE</span> <span class="st">students</span>
+    <span class="sk">DROP COLUMN</span> <span class="sc">city</span>;                              <span class="scm">-- ⑫ Delete the city column entirely</span>
+
+<span class="scm">-- Check the current structure of the table</span>
+<span class="sk">DESCRIBE</span> <span class="st">students</span>;                                <span class="scm">-- ⑬ Shows all columns, types, constraints</span>
+
+<span class="scm">-- Permanently delete the table (no undo!)</span>
+<span class="scm">-- DROP TABLE students;                             -- ⑭ Careful — destroys all data forever</span>
+    </div>
+  </div>
+  <div class="ann-block">
+    <div class="ann-title">// Line-by-Line Explanation</div>
+    <div class="ann-item"><span class="ann-n">①</span><div class="ann-t"><strong>CREATE DATABASE school_db</strong> — Creates the database container. Think of it as creating a new folder. All related tables will live inside this database.</div></div>
+    <div class="ann-item"><span class="ann-n">②</span><div class="ann-t"><strong>USE school_db</strong> — Tells MySQL "all my next commands should run inside this database." Without this, you'd get errors because MySQL doesn't know which database to look in.</div></div>
+    <div class="ann-item"><span class="ann-n">③</span><div class="ann-t"><strong>CREATE TABLE students ( ... )</strong> — Creates a new table. Everything inside the parentheses defines the columns. Each line inside is one column with its data type and rules.</div></div>
+    <div class="ann-item"><span class="ann-n">④</span><div class="ann-t"><strong>INT AUTO_INCREMENT PRIMARY KEY</strong> — Three things together: <code>INT</code> = whole number, <code>AUTO_INCREMENT</code> = MySQL automatically gives 1, 2, 3... so you never set this manually, <code>PRIMARY KEY</code> = this is the unique identifier for every row.</div></div>
+    <div class="ann-item"><span class="ann-n">⑤</span><div class="ann-t"><strong>VARCHAR(100) NOT NULL</strong> — <code>VARCHAR</code> = variable-length text (only uses as much space as needed), <code>(100)</code> = maximum 100 characters, <code>NOT NULL</code> = this field cannot be left empty — MySQL will reject the row if name is missing.</div></div>
+    <div class="ann-item"><span class="ann-n">⑧</span><div class="ann-t"><strong>DECIMAL(5,2)</strong> — Stores a precise decimal number. <code>(5,2)</code> means: 5 total digits, 2 after the decimal point. So: 999.99 is valid. Use DECIMAL for money/marks — never FLOAT (FLOAT has rounding errors).</div></div>
+    <div class="ann-item"><span class="ann-n">⑨</span><div class="ann-t"><strong>DEFAULT 'Chennai'</strong> — If a new student is added without specifying a city, MySQL automatically fills in 'Chennai'. Saves repetitive data entry.</div></div>
+  </div>
+
+  <!-- DML -->
+  <div class="sdiv"><span class="sd-txt">DML — Working With Data</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">dml_crud.sql</div></div>
+    <div class="cb-body">
+<span class="scm">-- ══════════════════════════════════════════════</span>
+<span class="scm">--  INSERT — Adding new rows into the table</span>
+<span class="scm">-- ══════════════════════════════════════════════</span>
+
+<span class="scm">-- Insert ONE student (providing all columns)</span>
+<span class="sk">INSERT INTO</span> <span class="st">students</span> (<span class="sc">name</span>, <span class="sc">age</span>, <span class="sc">department</span>, <span class="sc">marks</span>)
+<span class="sk">VALUES</span> (<span class="ss">'Priya'</span>, <span class="sn">20</span>, <span class="ss">'CS'</span>, <span class="sn">88.50</span>);
+<span class="scm">-- id is AUTO_INCREMENT so we skip it — MySQL sets it automatically</span>
+
+<span class="scm">-- Insert MULTIPLE students at once (more efficient than one-by-one)</span>
+<span class="sk">INSERT INTO</span> <span class="st">students</span> (<span class="sc">name</span>, <span class="sc">age</span>, <span class="sc">department</span>, <span class="sc">marks</span>)
+<span class="sk">VALUES</span>
+    (<span class="ss">'Ravi'</span>,  <span class="sn">21</span>, <span class="ss">'CS'</span>,   <span class="sn">75.00</span>),   <span class="scm">-- first student</span>
+    (<span class="ss">'Meena'</span>, <span class="sn">20</span>, <span class="ss">'ECE'</span>,  <span class="sn">92.00</span>),   <span class="scm">-- second student</span>
+    (<span class="ss">'Arjun'</span>, <span class="sn">22</span>, <span class="ss">'MECH'</span>, <span class="sn">65.50</span>),  <span class="scm">-- third student</span>
+    (<span class="ss">'Kavi'</span>,  <span class="sn">20</span>, <span class="ss">'CS'</span>,   <span class="sn">55.00</span>);  <span class="scm">-- fourth student</span>
+
+<span class="scm">-- ══════════════════════════════════════════════</span>
+<span class="scm">--  UPDATE — Changing existing row data</span>
+<span class="scm">-- ══════════════════════════════════════════════</span>
+
+<span class="scm">-- Update ONE specific student (use WHERE to target exactly)</span>
+<span class="sk">UPDATE</span> <span class="st">students</span>
+<span class="sk">SET</span>    <span class="sc">marks</span> = <span class="sn">90.00</span>          <span class="scm">-- change marks to 90.00</span>
+<span class="sk">WHERE</span>  <span class="sc">id</span> = <span class="sn">1</span>;                <span class="scm">-- ONLY for the row where id = 1 (Priya)</span>
+
+<span class="scm">-- Update MULTIPLE columns at once for a student</span>
+<span class="sk">UPDATE</span> <span class="st">students</span>
+<span class="sk">SET</span>    <span class="sc">marks</span> = <span class="sn">78.00</span>,
+       <span class="sc">department</span> = <span class="ss">'IT'</span>      <span class="scm">-- comma-separated to update multiple columns</span>
+<span class="sk">WHERE</span>  <span class="sc">name</span> = <span class="ss">'Ravi'</span>;          <span class="scm">-- target by name instead of id</span>
+
+<span class="scm">-- ══════════════════════════════════════════════</span>
+<span class="scm">--  DELETE — Removing rows</span>
+<span class="scm">-- ══════════════════════════════════════════════</span>
+
+<span class="scm">-- Delete ONE specific student</span>
+<span class="sk">DELETE FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">id</span> = <span class="sn">5</span>;                  <span class="scm">-- remove the row with id = 5 only</span>
+
+<span class="scm">-- Delete all students from a department</span>
+<span class="sk">DELETE FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">department</span> = <span class="ss">'MECH'</span>;    <span class="scm">-- removes ALL MECH students</span>
+    </div>
+  </div>
+
+  <div class="box warn"><strong>Always use WHERE with UPDATE and DELETE.</strong> Running <code>DELETE FROM students;</code> without a WHERE clause deletes every single row in the table instantly. This is the most dangerous SQL mistake beginners make. Always double-check your WHERE condition before executing.</div>
+
+  <!-- DQL -->
+  <div class="sdiv"><span class="sd-txt">DQL — Querying Data (The Real Power)</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">dql_select.sql</div></div>
+    <div class="cb-body">
+<span class="scm">-- ── SELECT BASICS ────────────────────────────────────</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>;
+<span class="scm">-- * means ALL columns. Shows every column and every row. Use for exploration, not production.</span>
+
+<span class="sk">SELECT</span> <span class="sc">name</span>, <span class="sc">marks</span> <span class="sk">FROM</span> <span class="st">students</span>;
+<span class="scm">-- Show ONLY name and marks columns. Always prefer specific columns over *</span>
+
+<span class="sk">SELECT</span> <span class="sk">DISTINCT</span> <span class="sc">department</span> <span class="sk">FROM</span> <span class="st">students</span>;
+<span class="scm">-- DISTINCT removes duplicates. Shows each department name only once.</span>
+
+<span class="scm">-- ── WHERE — Filtering rows ───────────────────────────</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span> <span class="sk">WHERE</span> <span class="sc">marks</span> &gt; <span class="sn">75</span>;
+<span class="scm">-- Only rows where marks column value is greater than 75</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">department</span> = <span class="ss">'CS'</span> <span class="sk">AND</span> <span class="sc">marks</span> &gt; <span class="sn">80</span>;
+<span class="scm">-- AND: BOTH conditions must be true. CS students who also scored above 80.</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">department</span> = <span class="ss">'CS'</span> <span class="sk">OR</span> <span class="sc">department</span> = <span class="ss">'IT'</span>;
+<span class="scm">-- OR: Either condition is true. Students in CS or IT.</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">department</span> <span class="sk">IN</span> (<span class="ss">'CS'</span>, <span class="ss">'IT'</span>, <span class="ss">'ECE'</span>);
+<span class="scm">-- IN is cleaner than multiple OR conditions. Same result, more readable.</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">marks</span> <span class="sk">BETWEEN</span> <span class="sn">60</span> <span class="sk">AND</span> <span class="sn">90</span>;
+<span class="scm">-- BETWEEN is inclusive — includes 60 and 90. Same as marks >= 60 AND marks <= 90.</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">name</span> <span class="sk">LIKE</span> <span class="ss">'P%'</span>;
+<span class="scm">-- LIKE with % wildcard: names that START with P. % = "any characters after"</span>
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">WHERE</span> <span class="sc">email</span> <span class="sk">IS NULL</span>;
+<span class="scm">-- IS NULL: rows where email column has no value. Cannot use = NULL — use IS NULL.</span>
+
+<span class="scm">-- ── ORDER BY — Sorting results ───────────────────────</span>
+
+<span class="sk">SELECT</span> <span class="sc">name</span>, <span class="sc">marks</span> <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">ORDER BY</span> <span class="sc">marks</span> <span class="sk">DESC</span>;
+<span class="scm">-- DESC = highest to lowest (descending). ASC = lowest to highest (ascending, the default).</span>
+
+<span class="sk">SELECT</span> <span class="sc">name</span>, <span class="sc">department</span>, <span class="sc">marks</span> <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">ORDER BY</span> <span class="sc">department</span> <span class="sk">ASC</span>, <span class="sc">marks</span> <span class="sk">DESC</span>;
+<span class="scm">-- Sort by department (A-Z first), then within each department sort by marks (highest first)</span>
+
+<span class="sk">SELECT</span> <span class="sc">name</span>, <span class="sc">marks</span> <span class="sk">FROM</span> <span class="st">students</span>
+<span class="sk">ORDER BY</span> <span class="sc">marks</span> <span class="sk">DESC</span>
+<span class="sk">LIMIT</span> <span class="sn">3</span>;
+<span class="scm">-- LIMIT 3: show only the top 3 results. Used for "top N" queries and pagination.</span>
+
+<span class="scm">-- ── AGGREGATE FUNCTIONS ──────────────────────────────</span>
+
+<span class="sk">SELECT</span>
+    <span class="sf">COUNT</span>(*) <span class="sk">AS</span> total_students,  <span class="scm">-- count all rows</span>
+    <span class="sf">AVG</span>(<span class="sc">marks</span>)  <span class="sk">AS</span> avg_marks,    <span class="scm">-- average of marks column</span>
+    <span class="sf">MAX</span>(<span class="sc">marks</span>)  <span class="sk">AS</span> highest,       <span class="scm">-- highest marks value</span>
+    <span class="sf">MIN</span>(<span class="sc">marks</span>)  <span class="sk">AS</span> lowest,        <span class="scm">-- lowest marks value</span>
+    <span class="sf">SUM</span>(<span class="sc">marks</span>)  <span class="sk">AS</span> total_marks    <span class="scm">-- sum of all marks</span>
+<span class="sk">FROM</span> <span class="st">students</span>;
+<span class="scm">-- AS gives the result column a readable name (alias)</span>
+
+<span class="scm">-- ── GROUP BY — Aggregate per group ───────────────────</span>
+
+<span class="scm">-- How many students are in each department?</span>
+<span class="sk">SELECT</span>
+    <span class="sc">department</span>,
+    <span class="sf">COUNT</span>(*) <span class="sk">AS</span> student_count,
+    <span class="sf">AVG</span>(<span class="sc">marks</span>) <span class="sk">AS</span> avg_marks
+<span class="sk">FROM</span>   <span class="st">students</span>
+<span class="sk">GROUP BY</span> <span class="sc">department</span>;
+<span class="scm">-- GROUP BY groups all CS students together, all ECE together, etc.,</span>
+<span class="scm">-- then COUNT(*) and AVG() run on each group separately</span>
+
+<span class="scm">-- HAVING — filter AFTER grouping (WHERE filters before grouping)</span>
+<span class="sk">SELECT</span>   <span class="sc">department</span>, <span class="sf">AVG</span>(<span class="sc">marks</span>) <span class="sk">AS</span> avg_marks
+<span class="sk">FROM</span>     <span class="st">students</span>
+<span class="sk">GROUP BY</span> <span class="sc">department</span>
+<span class="sk">HAVING</span>   <span class="sf">AVG</span>(<span class="sc">marks</span>) &gt; <span class="sn">70</span>;
+<span class="scm">-- HAVING filters groups. Here: only show departments where average marks > 70.</span>
+<span class="scm">-- WHERE cannot use aggregate functions. HAVING can.</span>
+    </div>
+  </div>
+
+  <div class="ann-block">
+    <div class="ann-title">// Key Concept Breakdown</div>
+    <div class="ann-item"><span class="ann-n">LIKE</span><div class="ann-t"><code>'P%'</code> = starts with P, <code>'%a'</code> = ends with a, <code>'%ri%'</code> = contains "ri" anywhere. The <strong>%</strong> is a wildcard for zero or more characters. The <strong>_</strong> underscore wildcard means exactly one character.</div></div>
+    <div class="ann-item"><span class="ann-n">NULL</span><div class="ann-t">NULL means <strong>no value</strong> — not 0, not empty string, but literally "unknown/missing." You cannot compare with <code>= NULL</code>. Always use <code>IS NULL</code> or <code>IS NOT NULL</code>.</div></div>
+    <div class="ann-item"><span class="ann-n">GROUP BY</span><div class="ann-t">Used with aggregate functions (COUNT, AVG, SUM, MAX, MIN). Every column in SELECT that is NOT inside an aggregate function MUST be in GROUP BY. Think: "group the rows, then count/average within each group."</div></div>
+    <div class="ann-item"><span class="ann-n">WHERE vs HAVING</span><div class="ann-t"><strong>WHERE</strong> filters individual rows <em>before</em> grouping. <strong>HAVING</strong> filters groups <em>after</em> grouping. Rule: if you need to use COUNT(), AVG() etc. in a filter — use HAVING.</div></div>
+  </div>
+
+  <div class="proj">
+    <div class="proj-lbl">🛠 Hands-on Task</div>
+    <div class="proj-title">School Database — Build from Scratch</div>
+    <div class="proj-desc">Create a database with tables: <strong>students</strong> (id, name, age, dept, marks) and <strong>courses</strong> (id, name, credits). Write queries to: (1) Insert 6 students across 3 departments. (2) Find all CS students scoring above 70. (3) Show the department with the highest average marks. (4) List the top 3 scorers by name and marks. (5) Count students per department where count > 1.</div>
+  </div>
+
+  <div class="qwrap">
+    <div class="q-title">Socratic Check</div>
+    <div class="q-sub">// click each after the class answers</div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q1</div><div class="qtx">What is the difference between WHERE and HAVING? Why can't you use <code>WHERE AVG(marks) > 70</code>?</div><div class="qarr">›</div></div><div class="qa"><strong>WHERE</strong> filters individual rows before any grouping happens — it runs on raw data. <strong>HAVING</strong> filters after GROUP BY creates groups. <code>AVG(marks)</code> is an aggregate — it doesn't exist as a value for individual rows. It only exists after rows are grouped. So WHERE literally can't see it yet.</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q2</div><div class="qtx">What happens if you run <code>UPDATE students SET marks = 100</code> without a WHERE clause?</div><div class="qarr">›</div></div><div class="qa">Every single student in the table gets their marks set to 100. There is <strong>no automatic undo</strong> in MySQL unless you're inside a transaction. This is one of the most catastrophic beginner mistakes in production databases. Always write <code>WHERE</code> first, then the rest of the UPDATE.</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q3</div><div class="qtx">What is the difference between <code>DELETE FROM students</code> and <code>DROP TABLE students</code>?</div><div class="qarr">›</div></div><div class="qa"><code>DELETE FROM students</code> removes <strong>all rows</strong> but keeps the table structure (columns, constraints) intact. <code>DROP TABLE students</code> destroys the entire table — structure, data, everything — completely gone. TRUNCATE TABLE is like DELETE but faster and non-transactional.</div></div>
+  </div>
+</section>
+
+<!-- ████████████████  2.2 JOINS, VIEWS, PROCEDURES  ████████████████ -->
+<section id="t2" class="sec">
+
+  <div class="th">
+    <div class="th-num">2.2</div>
+    <div class="th-meta">
+      <div class="th-eye">Topic 2.2 · 2 Hours</div>
+      <div class="th-title">Joins, Views &amp; Stored Procedures</div>
+      <div class="th-sub">Combining data from multiple tables, creating reusable views, and writing stored procedures. This is where databases become genuinely powerful.</div>
+      <div class="th-tags">
+        <span class="ttag">INNER JOIN</span><span class="ttag">LEFT JOIN</span><span class="ttag">RIGHT JOIN</span>
+        <span class="ttag">subqueries</span><span class="ttag">CREATE VIEW</span><span class="ttag">stored procedures</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fey">
+    <div class="fey-lbl">⚗ Feynman — Why Joins Exist</div>
+    <p>Good database design stores each type of data in its <strong>own table</strong>. Student details in a students table. Course details in a courses table. Grades in an enrollments table. This avoids repeating the same data everywhere. But now, when you want <em>"show me each student's name along with the courses they're enrolled in and their grades,"</em> you need to <strong>combine these tables</strong>. That's what a JOIN does — it stitches tables together on a matching column, like connecting two puzzle pieces that share an edge.</p>
+  </div>
+
+  <div class="dlbl">🗣 Socratic Dialogue</div>
+  <div class="chat">
+    <div class="bb T"><div class="av T">T</div><div class="ms">If I have a students table and a courses table, how do I know which student is enrolled in which course?</div></div>
+    <div class="bb S"><div class="av S">S</div><div class="ms">Store the student ID in the courses table?</div></div>
+    <div class="bb T"><div class="av T">T</div><div class="ms">Exactly — that's called a <strong>foreign key</strong>. The enrollment table holds a student_id and a course_id — it links the two. Now, how do I get the student's actual name alongside the course name in one result?</div></div>
+    <div class="bb S"><div class="av S">S</div><div class="ms">You'd have to join the tables on the matching IDs?</div></div>
+    <div class="bb T"><div class="av T">T</div><div class="ms">Perfect. That's a JOIN. The matching column is the bridge between the two tables. Now — what if some students haven't enrolled in any course yet — would an INNER JOIN show them?</div></div>
+    <div class="bb S"><div class="av S">S</div><div class="ms">No? Because there's no matching row in enrollments?</div></div>
+    <div class="bb T"><div class="av T">T</div><div class="ms">Right — INNER JOIN only shows rows that have a match in BOTH tables. To include students with no enrollment, you'd use a LEFT JOIN — it keeps all rows from the left (students) table.</div></div>
+  </div>
+
+  <!-- JOIN VISUALS -->
+  <div class="sdiv"><span class="sd-txt">The Four Join Types</span><div class="sd-line"></div></div>
+  <div class="join-grid">
+    <div class="jc">
+      <div class="jc-name">INNER JOIN</div>
+      <div class="jc-venn">🟦🟩</div>
+      <div class="jc-desc">Returns ONLY rows where a match exists in BOTH tables. Non-matching rows from either side are excluded.</div>
+      <div class="jc-ex">Students who ARE enrolled in a course</div>
+    </div>
+    <div class="jc">
+      <div class="jc-name">LEFT JOIN (LEFT OUTER)</div>
+      <div class="jc-venn">🟦⬜</div>
+      <div class="jc-desc">Returns ALL rows from the LEFT table. Non-matching rows from the right table show as NULL.</div>
+      <div class="jc-ex">ALL students — enrolled or not</div>
+    </div>
+    <div class="jc">
+      <div class="jc-name">RIGHT JOIN (RIGHT OUTER)</div>
+      <div class="jc-venn">⬜🟩</div>
+      <div class="jc-desc">Returns ALL rows from the RIGHT table. Non-matching rows from the left table show as NULL.</div>
+      <div class="jc-ex">ALL courses — enrolled or not</div>
+    </div>
+    <div class="jc">
+      <div class="jc-name">FULL OUTER JOIN</div>
+      <div class="jc-venn">🟦🟣🟩</div>
+      <div class="jc-desc">Returns ALL rows from BOTH tables. Non-matching rows on either side show as NULL. (MySQL: simulate with UNION)</div>
+      <div class="jc-ex">All students and all courses, matched or not</div>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">joins.sql — Setup + All Join Types</div></div>
+    <div class="cb-body">
+<span class="scm">-- First: the two tables we'll join</span>
+<span class="sk">CREATE TABLE</span> <span class="st">courses</span> (
+    <span class="sc">id</span>       <span class="sf">INT</span> <span class="sk">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="sc">name</span>     <span class="sf">VARCHAR</span>(<span class="sn">100</span>),
+    <span class="sc">credits</span>  <span class="sf">INT</span>
+);
+
+<span class="sk">CREATE TABLE</span> <span class="st">enrollments</span> (
+    <span class="sc">id</span>          <span class="sf">INT</span> <span class="sk">AUTO_INCREMENT PRIMARY KEY</span>,
+    <span class="sc">student_id</span>  <span class="sf">INT</span>,                               <span class="scm">-- links to students.id</span>
+    <span class="sc">course_id</span>   <span class="sf">INT</span>,                               <span class="scm">-- links to courses.id</span>
+    <span class="sc">grade</span>       <span class="sf">CHAR</span>(<span class="sn">2</span>),
+    <span class="sk">FOREIGN KEY</span> (<span class="sc">student_id</span>) <span class="sk">REFERENCES</span> <span class="st">students</span>(<span class="sc">id</span>),  <span class="scm">-- enforces relationship</span>
+    <span class="sk">FOREIGN KEY</span> (<span class="sc">course_id</span>)  <span class="sk">REFERENCES</span> <span class="st">courses</span>(<span class="sc">id</span>)    <span class="scm">-- cannot add invalid IDs</span>
+);
+
+<span class="scm">-- ── INNER JOIN ────────────────────────────────────────</span>
+<span class="scm">-- Only students who are actually enrolled in a course</span>
+<span class="sk">SELECT</span>
+    <span class="st">s</span>.<span class="sc">name</span>       <span class="sk">AS</span> student_name,  <span class="scm">-- s. prefix = from students table</span>
+    <span class="st">c</span>.<span class="sc">name</span>       <span class="sk">AS</span> course_name,   <span class="scm">-- c. prefix = from courses table</span>
+    <span class="st">e</span>.<span class="sc">grade</span>                         <span class="scm">-- e. prefix = from enrollments table</span>
+<span class="sk">FROM</span>       <span class="st">students</span>    <span class="sk">AS</span> <span class="st">s</span>        <span class="scm">-- alias 's' for shorter typing</span>
+<span class="sk">INNER JOIN</span> <span class="st">enrollments</span> <span class="sk">AS</span> <span class="st">e</span> <span class="sk">ON</span> <span class="st">s</span>.<span class="sc">id</span> = <span class="st">e</span>.<span class="sc">student_id</span>  <span class="scm">-- match students to enrollments</span>
+<span class="sk">INNER JOIN</span> <span class="st">courses</span>     <span class="sk">AS</span> <span class="st">c</span> <span class="sk">ON</span> <span class="st">e</span>.<span class="sc">course_id</span> = <span class="st">c</span>.<span class="sc">id</span>;  <span class="scm">-- match enrollments to courses</span>
+
+<span class="scm">-- ── LEFT JOIN ─────────────────────────────────────────</span>
+<span class="scm">-- ALL students — those without enrollment show NULL for course columns</span>
+<span class="sk">SELECT</span>
+    <span class="st">s</span>.<span class="sc">name</span>   <span class="sk">AS</span> student,
+    <span class="st">c</span>.<span class="sc">name</span>   <span class="sk">AS</span> course,      <span class="scm">-- NULL if student not enrolled</span>
+    <span class="st">e</span>.<span class="sc">grade</span>                   <span class="scm">-- NULL if student not enrolled</span>
+<span class="sk">FROM</span>      <span class="st">students</span>    <span class="sk">AS</span> <span class="st">s</span>
+<span class="sk">LEFT JOIN</span> <span class="st">enrollments</span> <span class="sk">AS</span> <span class="st">e</span> <span class="sk">ON</span> <span class="st">s</span>.<span class="sc">id</span> = <span class="st">e</span>.<span class="sc">student_id</span>
+<span class="sk">LEFT JOIN</span> <span class="st">courses</span>     <span class="sk">AS</span> <span class="st">c</span> <span class="sk">ON</span> <span class="st">e</span>.<span class="sc">course_id</span> = <span class="st">c</span>.<span class="sc">id</span>;
+
+<span class="scm">-- Find students who haven't enrolled in ANYTHING</span>
+<span class="sk">SELECT</span> <span class="st">s</span>.<span class="sc">name</span> <span class="sk">FROM</span> <span class="st">students</span> <span class="sk">AS</span> <span class="st">s</span>
+<span class="sk">LEFT JOIN</span> <span class="st">enrollments</span> <span class="sk">AS</span> <span class="st">e</span> <span class="sk">ON</span> <span class="st">s</span>.<span class="sc">id</span> = <span class="st">e</span>.<span class="sc">student_id</span>
+<span class="sk">WHERE</span> <span class="st">e</span>.<span class="sc">student_id</span> <span class="sk">IS NULL</span>;    <span class="scm">-- NULL means no match = not enrolled</span>
+    </div>
+  </div>
+
+  <!-- SUBQUERIES -->
+  <div class="sdiv"><span class="sd-txt">Subqueries — A Query Inside a Query</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">subqueries.sql</div></div>
+    <div class="cb-body">
+<span class="scm">-- A subquery is a SELECT inside another SELECT (or WHERE, FROM, HAVING)</span>
+<span class="scm">-- MySQL runs the inner query first, then uses its result in the outer query</span>
+
+<span class="scm">-- ── Example 1: Students who scored above the class average ──</span>
+<span class="sk">SELECT</span> <span class="sc">name</span>, <span class="sc">marks</span>
+<span class="sk">FROM</span>   <span class="st">students</span>
+<span class="sk">WHERE</span>  <span class="sc">marks</span> &gt; (
+    <span class="sk">SELECT</span> <span class="sf">AVG</span>(<span class="sc">marks</span>) <span class="sk">FROM</span> <span class="st">students</span>  <span class="scm">-- inner query: calculate average first</span>
+);
+<span class="scm">-- Step 1: Inner query runs → AVG(marks) = 75.0</span>
+<span class="scm">-- Step 2: Outer query runs → WHERE marks > 75.0</span>
+
+<span class="scm">-- ── Example 2: Students enrolled in more than 2 courses ──</span>
+<span class="sk">SELECT</span> <span class="sc">name</span>
+<span class="sk">FROM</span>   <span class="st">students</span>
+<span class="sk">WHERE</span>  <span class="sc">id</span> <span class="sk">IN</span> (
+    <span class="sk">SELECT</span> <span class="sc">student_id</span>           <span class="scm">-- inner query: find IDs of busy students</span>
+    <span class="sk">FROM</span>   <span class="st">enrollments</span>
+    <span class="sk">GROUP BY</span> <span class="sc">student_id</span>
+    <span class="sk">HAVING</span> <span class="sf">COUNT</span>(*) &gt; <span class="sn">2</span>         <span class="scm">-- only IDs with more than 2 course rows</span>
+);
+<span class="scm">-- The outer query receives a LIST of IDs and finds those student names</span>
+    </div>
+  </div>
+
+  <!-- VIEWS -->
+  <div class="sdiv"><span class="sd-txt">Views — Saved Queries You Can Reuse</span><div class="sd-line"></div></div>
+
+  <div class="box analogy"><strong>A View is like a named shortcut.</strong> Instead of writing a complex 5-table JOIN every time you need the same report, you create a view once and query it like a regular table. The view doesn't store data — every time you query it, it runs the underlying query fresh.</div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">views.sql</div></div>
+    <div class="cb-body">
+<span class="scm">-- Create a view: saves the JOIN query with a name</span>
+<span class="sk">CREATE VIEW</span> <span class="st">student_courses</span> <span class="sk">AS</span>   <span class="scm">-- ① give this view a name</span>
+    <span class="sk">SELECT</span>
+        <span class="st">s</span>.<span class="sc">name</span>    <span class="sk">AS</span> student,
+        <span class="st">c</span>.<span class="sc">name</span>    <span class="sk">AS</span> course,
+        <span class="st">e</span>.<span class="sc">grade</span>
+    <span class="sk">FROM</span>       <span class="st">students</span>    <span class="sk">AS</span> <span class="st">s</span>
+    <span class="sk">INNER JOIN</span> <span class="st">enrollments</span> <span class="sk">AS</span> <span class="st">e</span> <span class="sk">ON</span> <span class="st">s</span>.<span class="sc">id</span> = <span class="st">e</span>.<span class="sc">student_id</span>
+    <span class="sk">INNER JOIN</span> <span class="st">courses</span>     <span class="sk">AS</span> <span class="st">c</span> <span class="sk">ON</span> <span class="st">e</span>.<span class="sc">course_id</span> = <span class="st">c</span>.<span class="sc">id</span>;
+
+<span class="scm">-- Now query it EXACTLY like a table — no JOIN needed!</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">student_courses</span>;         <span class="scm">-- ② use view like a table</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="st">student_courses</span> <span class="sk">WHERE</span> <span class="sc">grade</span> = <span class="ss">'A'</span>;  <span class="scm">-- filter on top of view</span>
+
+<span class="scm">-- Modify a view later</span>
+<span class="sk">CREATE OR REPLACE VIEW</span> <span class="st">student_courses</span> <span class="sk">AS</span>  <span class="scm">-- ③ update the view definition</span>
+    <span class="sk">SELECT</span> <span class="st">s</span>.<span class="sc">name</span>, <span class="st">c</span>.<span class="sc">name</span> <span class="sk">AS</span> course, <span class="st">e</span>.<span class="sc">grade</span>, <span class="st">s</span>.<span class="sc">marks</span>
+    <span class="sk">FROM</span> <span class="st">students</span> <span class="st">s</span>
+    <span class="sk">JOIN</span> <span class="st">enrollments</span> <span class="st">e</span> <span class="sk">ON</span> <span class="st">s</span>.<span class="sc">id</span> = <span class="st">e</span>.<span class="sc">student_id</span>
+    <span class="sk">JOIN</span> <span class="st">courses</span> <span class="st">c</span>     <span class="sk">ON</span> <span class="st">e</span>.<span class="sc">course_id</span> = <span class="st">c</span>.<span class="sc">id</span>;
+
+<span class="scm">-- Remove a view</span>
+<span class="sk">DROP VIEW</span> <span class="st">student_courses</span>;              <span class="scm">-- ④ deletes the view, NOT the data</span>
+    </div>
+  </div>
+
+  <!-- STORED PROCEDURES -->
+  <div class="sdiv"><span class="sd-txt">Stored Procedures — Reusable SQL Logic</span><div class="sd-line"></div></div>
+
+  <div class="fey">
+    <div class="fey-lbl">⚗ Feynman — Stored Procedures</div>
+    <p>A stored procedure is like a <strong>function inside the database</strong>. You write SQL logic once, save it with a name, and call it with parameters anytime you need it. Instead of your Python app sending a long SQL query every time, it sends one short command: <code>CALL get_toppers(80)</code>. The logic lives in the database — closer to the data. This reduces network traffic and centralises business logic.</p>
+  </div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">stored_procedures.sql</div></div>
+    <div class="cb-body">
+<span class="scm">-- Change the delimiter so MySQL doesn't confuse ; inside the procedure</span>
+<span class="sk">DELIMITER</span> //          <span class="scm">-- ① change command-end symbol from ; to //</span>
+
+<span class="sk">CREATE PROCEDURE</span> <span class="sf">get_toppers</span>(<span class="sk">IN</span> <span class="sc">min_marks</span> <span class="sf">DECIMAL</span>(<span class="sn">5</span>,<span class="sn">2</span>))
+<span class="scm">-- IN: parameter going IN to the procedure. Name = min_marks, Type = DECIMAL</span>
+<span class="sk">BEGIN</span>                  <span class="scm">-- ② marks the start of the procedure body</span>
+
+    <span class="sk">SELECT</span> <span class="sc">name</span>, <span class="sc">department</span>, <span class="sc">marks</span>
+    <span class="sk">FROM</span>   <span class="st">students</span>
+    <span class="sk">WHERE</span>  <span class="sc">marks</span> &gt;= <span class="sc">min_marks</span>   <span class="scm">-- ③ use the parameter in the query</span>
+    <span class="sk">ORDER BY</span> <span class="sc">marks</span> <span class="sk">DESC</span>;
+
+<span class="sk">END</span> //                 <span class="scm">-- ④ marks the end of the procedure body</span>
+<span class="sk">DELIMITER</span> ;            <span class="scm">-- ⑤ restore the delimiter back to normal</span>
+
+<span class="scm">-- Call the procedure — like calling a function</span>
+<span class="sk">CALL</span> <span class="sf">get_toppers</span>(<span class="sn">80.00</span>);    <span class="scm">-- ⑥ runs the query with min_marks = 80.00</span>
+<span class="sk">CALL</span> <span class="sf">get_toppers</span>(<span class="sn">60.00</span>);    <span class="scm">-- ⑦ same logic, different threshold</span>
+
+<span class="scm">-- ── Procedure with OUT parameter (returns a value) ──</span>
+<span class="sk">DELIMITER</span> //
+<span class="sk">CREATE PROCEDURE</span> <span class="sf">count_dept</span>(<span class="sk">IN</span> <span class="sc">dept_name</span> <span class="sf">VARCHAR</span>(<span class="sn">50</span>), <span class="sk">OUT</span> <span class="sc">total</span> <span class="sf">INT</span>)
+<span class="sk">BEGIN</span>
+    <span class="sk">SELECT</span> <span class="sf">COUNT</span>(*) <span class="sk">INTO</span> <span class="sc">total</span>   <span class="scm">-- INTO stores result INTO the OUT variable</span>
+    <span class="sk">FROM</span> <span class="st">students</span>
+    <span class="sk">WHERE</span> <span class="sc">department</span> = <span class="sc">dept_name</span>;
+<span class="sk">END</span> //
+<span class="sk">DELIMITER</span> ;
+
+<span class="scm">-- Call with an output variable</span>
+<span class="sk">CALL</span> <span class="sf">count_dept</span>(<span class="ss">'CS'</span>, @cs_count);  <span class="scm">-- @variable = session variable</span>
+<span class="sk">SELECT</span> @cs_count;                    <span class="scm">-- retrieve the output value</span>
+
+<span class="scm">-- Remove a procedure</span>
+<span class="sk">DROP PROCEDURE IF EXISTS</span> <span class="sf">get_toppers</span>;
+    </div>
+  </div>
+
+  <div class="qwrap">
+    <div class="q-title">Socratic Check</div>
+    <div class="q-sub">// click to reveal</div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q1</div><div class="qtx">What is the difference between INNER JOIN and LEFT JOIN? When would you use each?</div><div class="qarr">›</div></div><div class="qa"><strong>INNER JOIN</strong>: Only returns rows with a match in BOTH tables. Use when you only care about records that have corresponding data on both sides (e.g. students who are enrolled). <strong>LEFT JOIN</strong>: Returns ALL rows from the left table + matching rows from the right. Rows with no match get NULL. Use when you want all records from the primary table regardless of whether they have related data (e.g. all students including unenrolled ones).</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q2</div><div class="qtx">What is a View and how is it different from a table?</div><div class="qarr">›</div></div><div class="qa">A <strong>View</strong> is a saved query — it's a virtual table. It stores the query definition, not the actual data. Every time you query a view, it re-runs the underlying query. A real table stores physical data on disk. Views are useful for: (1) simplifying complex queries, (2) restricting access to certain columns, (3) giving a stable interface even if the underlying tables change.</div></div>
+  </div>
+</section>
+
+<!-- ████████████████  2.3 PYTHON + MYSQL  ████████████████ -->
+<section id="t3" class="sec">
+
+  <div class="th">
+    <div class="th-num">2.3</div>
+    <div class="th-meta">
+      <div class="th-eye">Topic 2.3 · 3 Hours</div>
+      <div class="th-title">Python + MySQL with mysql-connector</div>
+      <div class="th-sub">Connecting Python to a MySQL database, running CRUD operations through Python code, and using parameterized queries to prevent SQL injection.</div>
+      <div class="th-tags">
+        <span class="ttag">mysql-connector-python</span>
+        <span class="ttag">connection</span><span class="ttag">cursor</span>
+        <span class="ttag">execute()</span><span class="ttag">fetchall()</span>
+        <span class="ttag">parameterized queries</span><span class="ttag">SQL injection</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fey">
+    <div class="fey-lbl">⚗ Feynman — How Python Talks to MySQL</div>
+    <p>Python and MySQL are two separate programs running on your computer. To make them talk, you need a <strong>connector</strong> — a bridge. The <code>mysql-connector-python</code> library is that bridge. Here's the flow: Python creates a <strong>Connection</strong> (like opening a phone call to MySQL), then creates a <strong>Cursor</strong> (like a pen that can write and read), uses the cursor to <strong>execute SQL</strong>, and then either <strong>commits</strong> (saves changes) or <strong>fetches</strong> (reads results). When done, both the cursor and connection are <strong>closed</strong> to free resources.</p>
+  </div>
+
+  <!-- CONNECTION FLOW VISUAL -->
+  <div class="conn-flow">
+    <div class="cf-box">
+      <div class="cf-icon">🐍</div>
+      <div class="cf-name">Python Script</div>
+      <div class="cf-tag">your code</div>
+    </div>
+    <div class="cf-arrow">→</div>
+    <div class="cf-box">
+      <div class="cf-icon">🔌</div>
+      <div class="cf-name">connector</div>
+      <div class="cf-tag">mysql-connector</div>
+    </div>
+    <div class="cf-arrow">→</div>
+    <div class="cf-box">
+      <div class="cf-icon">📞</div>
+      <div class="cf-name">Connection</div>
+      <div class="cf-tag">conn object</div>
+    </div>
+    <div class="cf-arrow">→</div>
+    <div class="cf-box">
+      <div class="cf-icon">✏️</div>
+      <div class="cf-name">Cursor</div>
+      <div class="cf-tag">executes SQL</div>
+    </div>
+    <div class="cf-arrow">→</div>
+    <div class="cf-box">
+      <div class="cf-icon">🗄️</div>
+      <div class="cf-name">MySQL Server</div>
+      <div class="cf-tag">returns results</div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="sdiv"><span class="sd-txt">Step 0 — Install &amp; Connect</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">terminal</div></div>
+    <div class="cb-body">
+<span class="pcm"># Install the MySQL connector library via pip</span>
+pip install mysql-connector-python
+<span class="pcm"># This downloads the bridge library from the internet into your Python environment</span>
+    </div>
+  </div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">db_connect.py — Establishing a Connection</div></div>
+    <div class="cb-body">
+<span class="pk">import</span> mysql.connector           <span class="pcm"># ① Import the connector library</span>
+<span class="pk">from</span> mysql.connector <span class="pk">import</span> Error  <span class="pcm"># ② Import the Error class for exception handling</span>
+
+<span class="pk">def</span> <span class="pf">get_connection</span>():
+    <span class="pcm">"""Creates and returns a connection to MySQL server."""</span>
+    <span class="pk">try</span>:
+        conn = mysql.connector.<span class="pf">connect</span>(    <span class="pcm"># ③ Open a connection to MySQL</span>
+            host=<span class="ps">"localhost"</span>,               <span class="pcm"># ④ MySQL server address (localhost = your own machine)</span>
+            user=<span class="ps">"root"</span>,                    <span class="pcm"># ⑤ MySQL username (change to your username)</span>
+            password=<span class="ps">"your_password"</span>,       <span class="pcm"># ⑥ MySQL password (use env variable in production!)</span>
+            database=<span class="ps">"school_db"</span>            <span class="pcm"># ⑦ Which database to connect to</span>
+        )
+        <span class="pk">if</span> conn.is_connected():
+            <span class="pf">print</span>(<span class="ps">"✅ Connected to MySQL successfully"</span>)
+        <span class="pk">return</span> conn                         <span class="pcm"># ⑧ Return the connection object to be used</span>
+
+    <span class="pk">except</span> <span class="pcl">Error</span> <span class="pk">as</span> e:
+        <span class="pf">print</span>(<span class="ps">f"❌ Connection failed: {e}"</span>)  <span class="pcm"># ⑨ Catch any connection errors</span>
+        <span class="pk">return</span> <span class="pk">None</span>                        <span class="pcm"># ⑩ Return None so caller knows it failed</span>
+    </div>
+  </div>
+  <div class="ann-block">
+    <div class="ann-title">// Line-by-Line Breakdown</div>
+    <div class="ann-item"><span class="ann-n">③</span><div class="ann-t"><code>mysql.connector.connect()</code> — Opens a TCP network connection to MySQL. This is like dialing a phone number. If MySQL isn't running, this raises an Error.</div></div>
+    <div class="ann-item"><span class="ann-n">④</span><div class="ann-t"><code>host="localhost"</code> — The address where MySQL is running. <strong>localhost</strong> means "this same computer." For a remote server, this would be an IP address like "192.168.1.100" or a domain name.</div></div>
+    <div class="ann-item"><span class="ann-n">⑦</span><div class="ann-t"><code>database="school_db"</code> — Automatically runs <code>USE school_db</code> after connecting. Without this, you'd have to manually specify the database in every query.</div></div>
+    <div class="ann-item"><span class="ann-n">⑧</span><div class="ann-t"><code>return conn</code> — Returns the connection object. Every CRUD operation will use this object. Think of it as the "open phone line" — keep it open until all your work is done.</div></div>
+  </div>
+
+  <!-- FULL CRUD -->
+  <div class="sdiv"><span class="sd-txt">Full CRUD via Python</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">crud_operations.py — Complete CRUD with explanations</div></div>
+    <div class="cb-body">
+<span class="pk">import</span> mysql.connector
+<span class="pk">from</span> mysql.connector <span class="pk">import</span> Error
+
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pcm">#  CREATE — Insert a new student into the database</span>
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pk">def</span> <span class="pf">add_student</span>(name, age, department, marks):
+    conn = mysql.connector.<span class="pf">connect</span>(host=<span class="ps">"localhost"</span>, user=<span class="ps">"root"</span>,
+                                    password=<span class="ps">"password"</span>, database=<span class="ps">"school_db"</span>)
+    cursor = conn.<span class="pf">cursor</span>()          <span class="pcm"># ① Create a cursor — it's the "pen" that executes SQL</span>
+
+    query = <span class="ps">"""
+        INSERT INTO students (name, age, department, marks)
+        VALUES (%s, %s, %s, %s)
+    """</span>
+    <span class="pcm">    # ② %s are placeholders — MySQL replaces them safely with the actual values</span>
+    <span class="pcm">    # NEVER put Python variables directly into the query string (SQL injection risk!)</span>
+
+    values = (name, age, department, marks)  <span class="pcm"># ③ A tuple of actual values — order must match %s</span>
+
+    cursor.<span class="pf">execute</span>(query, values)   <span class="pcm"># ④ Send query + values to MySQL — MySQL fills %s safely</span>
+    conn.<span class="pf">commit</span>()                   <span class="pcm"># ⑤ CRITICAL: saves the change permanently. Without this, INSERT is lost!</span>
+
+    <span class="pf">print</span>(<span class="ps">f"✅ Student added with ID: {cursor.lastrowid}"</span>)  <span class="pcm"># ⑥ lastrowid = the auto-generated id</span>
+
+    cursor.<span class="pf">close</span>()                  <span class="pcm"># ⑦ Close cursor first (good practice)</span>
+    conn.<span class="pf">close</span>()                    <span class="pcm"># ⑧ Close connection — frees MySQL server resources</span>
+
+
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pcm">#  READ — Fetch students from the database</span>
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pk">def</span> <span class="pf">get_all_students</span>():
+    conn = mysql.connector.<span class="pf">connect</span>(host=<span class="ps">"localhost"</span>, user=<span class="ps">"root"</span>,
+                                    password=<span class="ps">"password"</span>, database=<span class="ps">"school_db"</span>)
+    cursor = conn.<span class="pf">cursor</span>()
+
+    cursor.<span class="pf">execute</span>(<span class="ps">"SELECT id, name, department, marks FROM students"</span>)
+    <span class="pcm">    # No values tuple needed for SELECT without parameters</span>
+
+    rows = cursor.<span class="pf">fetchall</span>()       <span class="pcm"># ⑨ Fetch ALL result rows — returns list of tuples</span>
+    <span class="pcm">    # fetchone()  → one row (or None if no more rows)</span>
+    <span class="pcm">    # fetchmany(5) → next 5 rows as list</span>
+    <span class="pcm">    # fetchall()  → ALL remaining rows as list</span>
+
+    <span class="pk">for</span> row <span class="pk">in</span> rows:               <span class="pcm"># ⑩ Each row is a tuple: (id, name, dept, marks)</span>
+        <span class="pf">print</span>(<span class="ps">f"ID:{row[0]} | {row[1]} | {row[2]} | {row[3]}"</span>)
+        <span class="pcm">        # row[0]=id, row[1]=name, row[2]=department, row[3]=marks</span>
+
+    cursor.<span class="pf">close</span>(); conn.<span class="pf">close</span>()
+    <span class="pk">return</span> rows                     <span class="pcm"># ⑪ Return the list so the caller can use it</span>
+
+
+<span class="pcm"># ── Better: use DictCursor to get rows as dicts instead of tuples</span>
+<span class="pk">def</span> <span class="pf">get_students_as_dicts</span>():
+    conn = mysql.connector.<span class="pf">connect</span>(host=<span class="ps">"localhost"</span>, user=<span class="ps">"root"</span>,
+                                    password=<span class="ps">"password"</span>, database=<span class="ps">"school_db"</span>)
+    cursor = conn.<span class="pf">cursor</span>(dictionary=<span class="pk">True</span>)  <span class="pcm"># ⑫ dictionary=True → rows as dicts not tuples</span>
+
+    cursor.<span class="pf">execute</span>(<span class="ps">"SELECT * FROM students"</span>)
+    rows = cursor.<span class="pf">fetchall</span>()
+
+    <span class="pk">for</span> row <span class="pk">in</span> rows:
+        <span class="pf">print</span>(<span class="ps">f"Name: {row['name']}, Marks: {row['marks']}"</span>)
+        <span class="pcm">        # row['name'] is much clearer than row[1]!</span>
+
+    cursor.<span class="pf">close</span>(); conn.<span class="pf">close</span>()
+
+
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pcm">#  UPDATE — Modify existing student data</span>
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pk">def</span> <span class="pf">update_marks</span>(student_id, new_marks):
+    conn = mysql.connector.<span class="pf">connect</span>(host=<span class="ps">"localhost"</span>, user=<span class="ps">"root"</span>,
+                                    password=<span class="ps">"password"</span>, database=<span class="ps">"school_db"</span>)
+    cursor = conn.<span class="pf">cursor</span>()
+
+    query = <span class="ps">"UPDATE students SET marks = %s WHERE id = %s"</span>
+    <span class="pcm">    # Two %s placeholders: first for new_marks, second for student_id</span>
+    cursor.<span class="pf">execute</span>(query, (new_marks, student_id))  <span class="pcm"># ⑬ tuple order must match %s order</span>
+    conn.<span class="pf">commit</span>()                               <span class="pcm"># ⑭ Must commit UPDATE too — or change is lost</span>
+
+    <span class="pf">print</span>(<span class="ps">f"✅ Updated {cursor.rowcount} row(s)"</span>)  <span class="pcm"># ⑮ rowcount = how many rows were affected</span>
+    cursor.<span class="pf">close</span>(); conn.<span class="pf">close</span>()
+
+
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pcm">#  DELETE — Remove a student</span>
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pk">def</span> <span class="pf">delete_student</span>(student_id):
+    conn = mysql.connector.<span class="pf">connect</span>(host=<span class="ps">"localhost"</span>, user=<span class="ps">"root"</span>,
+                                    password=<span class="ps">"password"</span>, database=<span class="ps">"school_db"</span>)
+    cursor = conn.<span class="pf">cursor</span>()
+
+    cursor.<span class="pf">execute</span>(<span class="ps">"DELETE FROM students WHERE id = %s"</span>, (student_id,))
+    <span class="pcm">    # Note the comma: (student_id,) is a one-item tuple, NOT just parentheses</span>
+    conn.<span class="pf">commit</span>()
+    <span class="pf">print</span>(<span class="ps">f"🗑️  Deleted student with ID {student_id}"</span>)
+    cursor.<span class="pf">close</span>(); conn.<span class="pf">close</span>()
+
+
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pcm">#  Running everything together</span>
+<span class="pcm"># ══════════════════════════════════════════════════════</span>
+<span class="pk">if</span> __name__ == <span class="ps">"__main__"</span>:
+    <span class="pf">add_student</span>(<span class="ps">"Priya"</span>, <span class="pn">20</span>, <span class="ps">"CS"</span>, <span class="pn">88.50</span>)   <span class="pcm"># Insert</span>
+    <span class="pf">get_all_students</span>()                         <span class="pcm"># Read all</span>
+    <span class="pf">update_marks</span>(<span class="pn">1</span>, <span class="pn">92.00</span>)                    <span class="pcm"># Update id=1</span>
+    <span class="pf">get_all_students</span>()                         <span class="pcm"># Verify update</span>
+    </div>
+  </div>
+  <div class="ann-block">
+    <div class="ann-title">// Critical Concepts</div>
+    <div class="ann-item"><span class="ann-n">⑤ commit()</span><div class="ann-t"><strong>The most forgotten step.</strong> INSERT, UPDATE, DELETE are not saved to disk until you call <code>conn.commit()</code>. MySQL keeps the changes in a temporary transaction. If the program crashes before commit(), everything is rolled back automatically. For SELECT (read-only), no commit is needed.</div></div>
+    <div class="ann-item"><span class="ann-n">② %s</span><div class="ann-t">The <code>%s</code> placeholder is how you safely pass values. MySQL's driver replaces them after properly escaping special characters. <strong>Never do:</strong> <code>query = f"INSERT ... VALUES ('{name}')"</code> — this is SQL injection vulnerable.</div></div>
+    <div class="ann-item"><span class="ann-n">⑨ fetchall()</span><div class="ann-t">Returns a <strong>list of tuples</strong>. Each tuple is one row. Each element in the tuple corresponds to one column in the order you selected them. For easier access, use <code>dictionary=True</code> cursor to get <code>row['name']</code> instead of <code>row[1]</code>.</div></div>
+    <div class="ann-item"><span class="ann-n">⑮ rowcount</span><div class="ann-t"><code>cursor.rowcount</code> tells you how many rows were affected by the last INSERT/UPDATE/DELETE. If you UPDATE with a WHERE that matches nothing, rowcount will be 0 — a useful way to detect "nothing changed."</div></div>
+  </div>
+
+  <!-- SQL INJECTION -->
+  <div class="sdiv"><span class="sd-txt">SQL Injection — The Most Important Security Concept</span><div class="sd-line"></div></div>
+
+  <div class="box warn"><strong>SQL Injection</strong> is the most common web security vulnerability. If you build a SQL query by directly inserting user input, a malicious user can type SQL code as their "name" and destroy your database or steal all data. Parameterized queries (%s placeholders) completely prevent this.</div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">sql_injection.py — Dangerous vs Safe</div></div>
+    <div class="cb-body">
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  ❌ DANGEROUS — NEVER DO THIS</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+user_input = <span class="ps">"Priya"</span>   <span class="pcm"># pretend this came from a web form</span>
+
+<span class="pcm"># Direct string formatting — DANGEROUS!</span>
+query = <span class="ps">f"SELECT * FROM students WHERE name = '{user_input}'"</span>
+<span class="pcm"># This builds: SELECT * FROM students WHERE name = 'Priya'  — OK for now...</span>
+
+<span class="pcm"># But what if the user types this as their name?</span>
+evil_input = <span class="ps">"' OR '1'='1"</span>
+bad_query = <span class="ps">f"SELECT * FROM students WHERE name = '{evil_input}'"</span>
+<span class="pcm"># This builds: SELECT * FROM students WHERE name = '' OR '1'='1'</span>
+<span class="pcm"># '1'='1' is always true → returns EVERY student! Data leak!</span>
+
+even_worse = <span class="ps">"'; DROP TABLE students; --"</span>
+<span class="pcm"># Builds: SELECT ... WHERE name = ''; DROP TABLE students; --'</span>
+<span class="pcm"># The ; ends your query, DROP TABLE deletes your entire table, -- comments out the rest</span>
+<span class="pcm"># This is how entire databases get wiped by hackers.</span>
+
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  ✅ SAFE — Parameterized query — ALWAYS use this</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="pk">def</span> <span class="pf">find_student_safe</span>(cursor, name):
+    query = <span class="ps">"SELECT * FROM students WHERE name = %s"</span>
+    <span class="pcm">    # %s is a placeholder — MySQL will handle escaping, not Python string formatting</span>
+
+    cursor.<span class="pf">execute</span>(query, (name,))
+    <span class="pcm">    # MySQL sees: find rows where name = [the actual value]</span>
+    <span class="pcm">    # Even if name = "'; DROP TABLE students; --"</span>
+    <span class="pcm">    # MySQL treats the entire thing as a literal STRING to search for — not as SQL code</span>
+    <span class="pcm">    # The attack is completely neutralised</span>
+
+    <span class="pk">return</span> cursor.<span class="pf">fetchall</span>()
+    </div>
+  </div>
+
+  <!-- BEST PRACTICE: Connection Context Manager -->
+  <div class="sdiv"><span class="sd-txt">Best Practice — Clean Connection Handling</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">best_practice.py — Robust Database Code</div></div>
+    <div class="cb-body">
+<span class="pk">import</span> mysql.connector
+<span class="pk">from</span> mysql.connector <span class="pk">import</span> Error
+
+<span class="pcm"># Best practice: store connection config in one place</span>
+DB_CONFIG = {                        <span class="pcm"># ① A dict to hold all connection settings</span>
+    <span class="ps">"host"</span>:     <span class="ps">"localhost"</span>,
+    <span class="ps">"user"</span>:     <span class="ps">"root"</span>,
+    <span class="ps">"password"</span>: <span class="ps">"password"</span>,         <span class="pcm"># In real apps, read from environment variable</span>
+    <span class="ps">"database"</span>: <span class="ps">"school_db"</span>
+}
+
+<span class="pk">def</span> <span class="pf">get_students_above</span>(min_marks):
+    <span class="pcm">"""Fetch all students scoring above min_marks."""</span>
+    conn = <span class="pk">None</span>                     <span class="pcm"># ② Initialize to None so finally block is safe</span>
+    <span class="pk">try</span>:
+        conn   = mysql.connector.<span class="pf">connect</span>(**DB_CONFIG)  <span class="pcm"># ③ ** unpacks dict as keyword args</span>
+        cursor = conn.<span class="pf">cursor</span>(dictionary=<span class="pk">True</span>)         <span class="pcm"># ④ Dict cursor for readable rows</span>
+
+        cursor.<span class="pf">execute</span>(
+            <span class="ps">"SELECT name, department, marks FROM students WHERE marks >= %s ORDER BY marks DESC"</span>,
+            (min_marks,)             <span class="pcm"># ⑤ Parameterized — safe from injection</span>
+        )
+        results = cursor.<span class="pf">fetchall</span>() <span class="pcm"># ⑥ Get all matching rows</span>
+        cursor.<span class="pf">close</span>()              <span class="pcm"># ⑦ Close cursor first</span>
+        <span class="pk">return</span> results
+
+    <span class="pk">except</span> <span class="pcl">Error</span> <span class="pk">as</span> e:
+        <span class="pf">print</span>(<span class="ps">f"Database error: {e}"</span>)  <span class="pcm"># ⑧ Catch and report error — don't crash</span>
+        <span class="pk">return</span> []                       <span class="pcm"># ⑨ Return empty list so caller can handle gracefully</span>
+
+    <span class="pk">finally</span>:
+        <span class="pk">if</span> conn <span class="pk">and</span> conn.is_connected():
+            conn.<span class="pf">close</span>()             <span class="pcm"># ⑩ ALWAYS close — even if an exception occurred</span>
+
+
+<span class="pcm"># Use the function</span>
+students = <span class="pf">get_students_above</span>(<span class="pn">75</span>)
+<span class="pk">for</span> s <span class="pk">in</span> students:
+    <span class="pf">print</span>(<span class="ps">f"{s['name']:15} {s['department']:8} {s['marks']}"</span>)
+    <span class="pcm">    # :15 and :8 are format specifiers — pad name to 15 chars, dept to 8 chars</span>
+    </div>
+  </div>
+
+  <div class="proj">
+    <div class="proj-lbl">🛠 Hands-on Project</div>
+    <div class="proj-title">Student Management CLI App</div>
+    <div class="proj-desc">Build a command-line menu app: <code>1. Add Student  2. View All  3. Search by Dept  4. Update Marks  5. Delete  6. Exit</code>. Use the school_db database. Every operation must use parameterized queries. On startup, create the table if it doesn't exist. Show rowcount feedback after every write operation.</div>
+  </div>
+
+  <div class="qwrap">
+    <div class="q-title">Socratic Check</div>
+    <div class="q-sub">// click to reveal</div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q1</div><div class="qtx">What is a cursor and why do you need it if you already have a connection?</div><div class="qarr">›</div></div><div class="qa">A <strong>connection</strong> is the open channel to MySQL — like a phone line. A <strong>cursor</strong> is the actual tool that sends queries and reads results through that channel — like the person speaking on the phone. One connection can have multiple cursors. The cursor maintains the state of your query — which row you're currently reading, how many rows were affected, etc.</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q2</div><div class="qtx">Why is <code>conn.commit()</code> required after INSERT but not after SELECT?</div><div class="qarr">›</div></div><div class="qa">MySQL wraps write operations (INSERT, UPDATE, DELETE) in a <strong>transaction</strong> by default. The transaction is a "draft" — it's not permanent until committed. <code>commit()</code> finalises the draft. SELECT is a read-only operation — it doesn't change any data, so there's nothing to commit. Without commit, your inserts appear to work (no error) but disappear when the connection closes.</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q3</div><div class="qtx">Explain SQL injection with a real example and explain why <code>%s</code> prevents it.</div><div class="qarr">›</div></div><div class="qa">If a user types <code>' OR '1'='1</code> as their name, a string-formatted query becomes <code>WHERE name = '' OR '1'='1'</code> — which is always true — leaking all rows. With <code>%s</code>, MySQL receives the value separately from the query structure. It escapes special characters before inserting the value. The <strong>single quote</strong> in the user's input gets escaped to <code>\'</code> — treated as literal text, not SQL syntax. The query structure is fixed; the value cannot alter it.</div></div>
+  </div>
+</section>
+
+<!-- ████████████████  2.4 SQLITE  ████████████████ -->
+<section id="t4" class="sec">
+
+  <div class="th">
+    <div class="th-num">2.4</div>
+    <div class="th-meta">
+      <div class="th-eye">Topic 2.4 · 2 Hours</div>
+      <div class="th-title">Introduction to SQLite</div>
+      <div class="th-sub">Python's built-in database — no server, no installation, no configuration. A single file IS the database. Perfect for development, testing, and small applications.</div>
+      <div class="th-tags">
+        <span class="ttag">sqlite3 module</span>
+        <span class="ttag">serverless</span><span class="ttag">:memory:</span>
+        <span class="ttag">file-based DB</span><span class="ttag">Django default</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fey">
+    <div class="fey-lbl">⚗ Feynman — What is SQLite?</div>
+    <p>MySQL is a full server — it runs as a separate process, requires installation, has users and passwords, and handles multiple simultaneous connections. SQLite is the opposite: <strong>the entire database lives in a single file</strong> on your hard disk. No server process. No network. No login. Python's <code>sqlite3</code> module is built right in — you don't install anything. You import it and start querying. The SQL syntax is almost identical to MySQL. This is why <strong>Django uses SQLite by default</strong> — developers can start immediately without setting up a server. When you're ready to deploy, you switch to MySQL or PostgreSQL.</p>
+  </div>
+
+  <!-- MYSQL VS SQLITE COMPARISON -->
+  <div class="sdiv"><span class="sd-txt">MySQL vs SQLite — When to Use Each</span><div class="sd-line"></div></div>
+
+  <div class="rtbl">
+    <thead><tr><th>Feature</th><th>SQLite</th><th>MySQL</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Server needed?</td>
+        <td><span class="badge bg-g">No server</span> — file-based</td>
+        <td><span class="badge bg-a">Server required</span></td>
+      </tr>
+      <tr>
+        <td>Installation</td>
+        <td><span class="badge bg-g">Zero</span> — built into Python</td>
+        <td><span class="badge bg-a">MySQL installer required</span></td>
+      </tr>
+      <tr>
+        <td>Database location</td>
+        <td>A single <code>.db</code> file on disk</td>
+        <td>Files managed by MySQL server</td>
+      </tr>
+      <tr>
+        <td>Concurrent writes</td>
+        <td><span class="badge bg-r">Poor</span> — file-level locking</td>
+        <td><span class="badge bg-g">Excellent</span> — row-level locking</td>
+      </tr>
+      <tr>
+        <td>Best for</td>
+        <td>Development, testing, mobile apps</td>
+        <td>Production web apps, multi-user</td>
+      </tr>
+      <tr>
+        <td>Django default?</td>
+        <td><span class="badge bg-g">Yes — out of the box</span></td>
+        <td>Requires settings change</td>
+      </tr>
+      <tr>
+        <td>SQL syntax</td>
+        <td>Standard SQL (mostly)</td>
+        <td>Standard SQL + MySQL extensions</td>
+      </tr>
+    </tbody>
+  </div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">sqlite_basics.py — Complete SQLite Guide</div></div>
+    <div class="cb-body">
+<span class="pk">import</span> sqlite3       <span class="pcm"># ① Built into Python — no pip install needed at all!</span>
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  CONNECTING — Creating or opening a database file</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+conn = sqlite3.<span class="pf">connect</span>(<span class="ps">"school.db"</span>)
+<span class="pcm"># ② If school.db exists → opens it. If not → creates it. No password, no server!</span>
+<span class="pcm"># A new file "school.db" appears in your current folder</span>
+
+conn_memory = sqlite3.<span class="pf">connect</span>(<span class="ps">":memory:"</span>)
+<span class="pcm"># ③ Special ":memory:" → creates the database entirely in RAM, not on disk</span>
+<span class="pcm"># Perfect for testing — database is gone the moment the program ends</span>
+<span class="pcm"># No file cleanup needed after tests</span>
+
+cursor = conn.<span class="pf">cursor</span>()    <span class="pcm"># ④ Same as MySQL — create a cursor to execute SQL</span>
+
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  CREATE TABLE</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+cursor.<span class="pf">execute</span>(<span class="ps">"""
+    CREATE TABLE IF NOT EXISTS students (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        name       TEXT    NOT NULL,
+        age        INTEGER,
+        department TEXT,
+        marks      REAL
+    )
+"""</span>)
+<span class="pcm"># ⑤ IF NOT EXISTS → safe to run multiple times without error</span>
+<span class="pcm"># SQLite data types: INTEGER (whole), REAL (decimal), TEXT (string), BLOB (binary)</span>
+<span class="pcm"># Note: AUTOINCREMENT (one word) in SQLite vs AUTO_INCREMENT in MySQL</span>
+
+conn.<span class="pf">commit</span>()             <span class="pcm"># ⑥ Commit the table creation (DDL needs commit in SQLite)</span>
+
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  INSERT — Single and bulk</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="pcm"># Insert one student — using ? placeholder (SQLite uses ? not %s like MySQL)</span>
+cursor.<span class="pf">execute</span>(
+    <span class="ps">"INSERT INTO students (name, age, department, marks) VALUES (?, ?, ?, ?)"</span>,
+    (<span class="ps">"Priya"</span>, <span class="pn">20</span>, <span class="ps">"CS"</span>, <span class="pn">88.5</span>)    <span class="pcm"># ⑦ ? is the SQLite placeholder (MySQL uses %s)</span>
+)
+
+<span class="pcm"># Insert MANY rows at once — executemany is more efficient than a loop of executes</span>
+students = [
+    (<span class="ps">"Ravi"</span>,  <span class="pn">21</span>, <span class="ps">"ECE"</span>,  <span class="pn">75.0</span>),  <span class="pcm"># each tuple is one row</span>
+    (<span class="ps">"Meena"</span>, <span class="pn">20</span>, <span class="ps">"CS"</span>,   <span class="pn">92.0</span>),
+    (<span class="ps">"Arjun"</span>, <span class="pn">22</span>, <span class="ps">"MECH"</span>, <span class="pn">65.5</span>),
+]
+cursor.<span class="pf">executemany</span>(       <span class="pcm"># ⑧ executemany → runs the query once for each tuple in the list</span>
+    <span class="ps">"INSERT INTO students (name, age, department, marks) VALUES (?, ?, ?, ?)"</span>,
+    students
+)
+conn.<span class="pf">commit</span>()             <span class="pcm"># ⑨ Save all inserts in one commit (more efficient)</span>
+
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  READ — Fetch data with different methods</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="pcm"># Fetch ALL rows</span>
+cursor.<span class="pf">execute</span>(<span class="ps">"SELECT * FROM students ORDER BY marks DESC"</span>)
+all_students = cursor.<span class="pf">fetchall</span>()  <span class="pcm"># ⑩ List of tuples</span>
+
+<span class="pk">for</span> row <span class="pk">in</span> all_students:
+    <span class="pf">print</span>(<span class="ps">f"  {row[1]:12} | {row[3]:6} | {row[4]}"</span>)
+
+<span class="pcm"># Fetch ONE row at a time (memory efficient for large results)</span>
+cursor.<span class="pf">execute</span>(<span class="ps">"SELECT name, marks FROM students WHERE marks > ?"</span>, (<span class="pn">80</span>,))
+<span class="pk">while</span> <span class="pk">True</span>:
+    row = cursor.<span class="pf">fetchone</span>()   <span class="pcm"># ⑪ Fetch one row per iteration</span>
+    <span class="pk">if</span> row <span class="pk">is</span> <span class="pk">None</span>:
+        <span class="pk">break</span>                   <span class="pcm"># ⑫ None means no more rows — stop the loop</span>
+    <span class="pf">print</span>(row)
+
+<span class="pcm"># Row factory — get results as dicts (similar to MySQL's dictionary=True)</span>
+conn.row_factory = sqlite3.Row  <span class="pcm"># ⑬ Set row_factory so rows behave like dicts</span>
+cursor2 = conn.<span class="pf">cursor</span>()         <span class="pcm"># ⑭ Need a NEW cursor after changing row_factory</span>
+cursor2.<span class="pf">execute</span>(<span class="ps">"SELECT * FROM students"</span>)
+<span class="pk">for</span> row <span class="pk">in</span> cursor2.<span class="pf">fetchall</span>():
+    <span class="pf">print</span>(<span class="ps">f"Name: {row['name']}, Marks: {row['marks']}"</span>)  <span class="pcm"># ⑮ column name access!</span>
+
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  UPDATE and DELETE — same pattern as MySQL</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+cursor.<span class="pf">execute</span>(<span class="ps">"UPDATE students SET marks = ? WHERE name = ?"</span>, (<span class="pn">95.0</span>, <span class="ps">"Priya"</span>))
+conn.<span class="pf">commit</span>()
+<span class="pf">print</span>(<span class="ps">f"Updated: {cursor.rowcount} row(s)"</span>)  <span class="pcm"># rowcount works in SQLite too</span>
+
+cursor.<span class="pf">execute</span>(<span class="ps">"DELETE FROM students WHERE marks < ?"</span>, (<span class="pn">50</span>,))
+conn.<span class="pf">commit</span>()
+
+
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pcm">#  CLEAN CLOSE — Always close when done</span>
+<span class="pcm"># ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+cursor.<span class="pf">close</span>()
+conn.<span class="pf">close</span>()              <span class="pcm"># ⑯ Flushes data to the .db file and releases the file lock</span>
+    </div>
+  </div>
+
+  <div class="ann-block">
+    <div class="ann-title">// Key SQLite vs MySQL Differences</div>
+    <div class="ann-item"><span class="ann-n">? vs %s</span><div class="ann-t">SQLite uses <code>?</code> as its placeholder. MySQL uses <code>%s</code>. Both prevent SQL injection in exactly the same way. When you switch from SQLite to MySQL in Django, this is handled automatically — you never see it.</div></div>
+    <div class="ann-item"><span class="ann-n">:memory:</span><div class="ann-t"><code>sqlite3.connect(":memory:")</code> creates the entire database in RAM. Nothing is written to disk. The database is completely destroyed when the program ends. Perfect for automated tests — no cleanup needed, no leftover test files.</div></div>
+    <div class="ann-item"><span class="ann-n">row_factory</span><div class="ann-t">Setting <code>conn.row_factory = sqlite3.Row</code> makes rows accessible by column name instead of index. It's the SQLite equivalent of MySQL's <code>dictionary=True</code> cursor.</div></div>
+    <div class="ann-item"><span class="ann-n">executemany</span><div class="ann-t"><code>cursor.executemany(query, list_of_tuples)</code> inserts all rows in one call — much faster than calling <code>execute()</code> in a loop. Internally it uses a single transaction for all rows.</div></div>
+  </div>
+
+  <!-- WITH STATEMENT -->
+  <div class="sdiv"><span class="sd-txt">Using with Statement — Auto-Close Connection</span><div class="sd-line"></div></div>
+
+  <div class="cb">
+    <div class="cb-top"><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div><div class="cb-name">sqlite_with_context.py — Clean Pattern</div></div>
+    <div class="cb-body">
+<span class="pk">import</span> sqlite3
+
+<span class="pcm"># The 'with' statement acts as a transaction manager in SQLite</span>
+<span class="pk">with</span> sqlite3.<span class="pf">connect</span>(<span class="ps">"school.db"</span>) <span class="pk">as</span> conn:
+    <span class="pcm">    # ① On success: automatically commits the transaction</span>
+    <span class="pcm">    # ② On exception: automatically rolls back (undoes) the transaction</span>
+    <span class="pcm">    # ③ Does NOT automatically close the connection (unlike file with-statement)</span>
+    <span class="pcm">    # Best practice: still call conn.close() after the with block</span>
+
+    cursor = conn.<span class="pf">cursor</span>()
+
+    <span class="pcm">    # All of this is wrapped in one transaction</span>
+    cursor.<span class="pf">execute</span>(<span class="ps">"INSERT INTO students (name, age, department, marks) VALUES (?,?,?,?)"</span>,
+                  (<span class="ps">"Test"</span>, <span class="pn">20</span>, <span class="ps">"CS"</span>, <span class="pn">70</span>))
+    cursor.<span class="pf">execute</span>(<span class="ps">"UPDATE students SET marks = marks + 5 WHERE department = ?"</span>, (<span class="ps">"CS"</span>,))
+    <span class="pcm">    # If any line above raises an exception, BOTH changes are rolled back</span>
+    <span class="pcm">    # Either both succeed, or neither does — this is ATOMIC operation</span>
+
+    results = cursor.<span class="pf">execute</span>(<span class="ps">"SELECT name, marks FROM students"</span>).<span class="pf">fetchall</span>()
+    <span class="pcm">    # Can chain .fetchall() directly onto .execute() for reads</span>
+
+    <span class="pk">for</span> name, marks <span class="pk">in</span> results:  <span class="pcm"># tuple unpacking — clean way to read rows</span>
+        <span class="pf">print</span>(<span class="ps">f"  {name}: {marks}"</span>)
+
+<span class="pcm"># 'with' block ends — transaction is committed if no exception occurred</span>
+
+
+<span class="pcm"># ── Complete reusable SQLite helper class ──────────────</span>
+<span class="pk">class</span> <span class="pcl">Database</span>:
+    <span class="ps">"""A simple wrapper for SQLite CRUD operations."""</span>
+
+    <span class="pk">def</span> <span class="pf">__init__</span>(<span class="pk">self</span>, db_path):
+        <span class="pk">self</span>.db_path = db_path               <span class="pcm"># store path for reuse</span>
+
+    <span class="pk">def</span> <span class="pf">_get_conn</span>(<span class="pk">self</span>):
+        <span class="pcm">"""Create connection with Row factory for dict-style access."""</span>
+        conn = sqlite3.<span class="pf">connect</span>(<span class="pk">self</span>.db_path)
+        conn.row_factory = sqlite3.Row       <span class="pcm"># enable column name access</span>
+        <span class="pk">return</span> conn
+
+    <span class="pk">def</span> <span class="pf">setup</span>(<span class="pk">self</span>):
+        <span class="pcm">"""Create tables if they don't exist yet."""</span>
+        <span class="pk">with</span> <span class="pk">self</span>.<span class="pf">_get_conn</span>() <span class="pk">as</span> conn:
+            conn.<span class="pf">execute</span>(<span class="ps">"""
+                CREATE TABLE IF NOT EXISTS students (
+                    id   INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    dept TEXT,
+                    marks REAL
+                )
+            """</span>)
+
+    <span class="pk">def</span> <span class="pf">add</span>(<span class="pk">self</span>, name, dept, marks):
+        <span class="pk">with</span> <span class="pk">self</span>.<span class="pf">_get_conn</span>() <span class="pk">as</span> conn:
+            conn.<span class="pf">execute</span>(
+                <span class="ps">"INSERT INTO students (name, dept, marks) VALUES (?,?,?)"</span>,
+                (name, dept, marks)
+            )
+        <span class="pf">print</span>(<span class="ps">f"Added: {name}"</span>)
+
+    <span class="pk">def</span> <span class="pf">get_all</span>(<span class="pk">self</span>):
+        <span class="pk">with</span> <span class="pk">self</span>.<span class="pf">_get_conn</span>() <span class="pk">as</span> conn:
+            rows = conn.<span class="pf">execute</span>(<span class="ps">"SELECT * FROM students ORDER BY marks DESC"</span>).<span class="pf">fetchall</span>()
+        <span class="pk">return</span> [<span class="pf">dict</span>(row) <span class="pk">for</span> row <span class="pk">in</span> rows]  <span class="pcm"># convert Row objects to plain dicts</span>
+
+<span class="pcm"># Use the class</span>
+db = <span class="pcl">Database</span>(<span class="ps">"school.db"</span>)
+db.<span class="pf">setup</span>()
+db.<span class="pf">add</span>(<span class="ps">"Priya"</span>, <span class="ps">"CS"</span>, <span class="pn">88.5</span>)
+db.<span class="pf">add</span>(<span class="ps">"Ravi"</span>,  <span class="ps">"ECE"</span>, <span class="pn">72.0</span>)
+<span class="pf">print</span>(db.<span class="pf">get_all</span>())
+    </div>
+  </div>
+
+  <div class="proj">
+    <div class="proj-lbl">🛠 Hands-on Project — Module 2 Capstone</div>
+    <div class="proj-title">Personal Contact Book with SQLite</div>
+    <div class="proj-desc">Build a contact book using SQLite: <strong>contacts</strong> table (id, name, phone, email, group_name). Wrap everything in a <code>ContactBook</code> class. Implement: <code>add_contact()</code>, <code>search_by_name()</code> (using LIKE), <code>list_by_group()</code> (GROUP BY), <code>update_phone()</code>, <code>delete_contact()</code>. Store database in <code>contacts.db</code>. Use <code>:memory:</code> for unit tests. Run the same code unchanged — show SQLite portability.</div>
+  </div>
+
+  <div class="qwrap">
+    <div class="q-title">Socratic Check</div>
+    <div class="q-sub">// click to reveal</div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q1</div><div class="qtx">What does <code>sqlite3.connect(":memory:")</code> create? Why is it useful for testing?</div><div class="qarr">›</div></div><div class="qa">Creates a <strong>completely in-memory database</strong> — nothing is written to disk. When the program ends (or the connection closes), the database is gone permanently. For testing: each test function can create a fresh <code>:memory:</code> database, run operations, and assert results — without creating, managing, or deleting test files. Tests are faster (RAM vs disk) and cleaner (no cleanup).</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q2</div><div class="qtx">SQLite uses <code>?</code> as a placeholder and MySQL uses <code>%s</code>. If you switch databases, do you have to rewrite all your queries?</div><div class="qarr">›</div></div><div class="qa">In raw Python code — yes, you'd need to change every <code>?</code> to <code>%s</code>. This is one reason frameworks like <strong>Django ORM</strong> are valuable — Django translates your Python code into the correct SQL for whatever database you're using. You write <code>Student.objects.filter(marks__gt=80)</code> once, and Django generates the right SQL for SQLite during development and MySQL in production. The placeholder difference is hidden from you.</div></div>
+    <div class="qi"><div class="qr" onclick="tq(this)"><div class="qnum">Q3</div><div class="qtx">When should a developer choose SQLite over MySQL for a project?</div><div class="qarr">›</div></div><div class="qa">Choose <strong>SQLite</strong> for: single-user apps, mobile apps, desktop tools, prototypes, scripts that process data, automated testing. Choose <strong>MySQL</strong> for: web apps with multiple users, any app where multiple processes write data simultaneously, production deployments, applications needing fine-grained user permissions. Django's golden rule: <em>develop with SQLite, deploy with PostgreSQL/MySQL.</em></div></div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="ft">Module 2 · Database with MySQL &amp; Python · Topics 2.1–2.4</div>
+  <div class="ft">Ethnus × Mother Teresa College · 2026</div>
+</footer>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b => b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function tq(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+</script>
+</body>
+</html>
