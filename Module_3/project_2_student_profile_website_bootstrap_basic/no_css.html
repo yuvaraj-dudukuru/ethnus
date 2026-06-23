@@ -1,0 +1,150 @@
+<!--
+  ===========================================================================
+   STUDENT PROFILE WEBSITE  -  no_css.html
+  ---------------------------------------------------------------------------
+   A student profile page for "Vikram Rao".
+
+   The big idea of this project: it uses BOOTSTRAP and writes NO custom CSS of
+   its own (hence the filename "no_css"). Bootstrap is a free CSS framework -
+   a giant ready-made stylesheet full of pre-built classes. Instead of writing
+   your own CSS, you just add Bootstrap's class names (like "btn", "navbar",
+   "table-striped") to your HTML and the styling appears automatically.
+
+   We also use "Bootstrap Icons", a matching free icon font.
+  ===========================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vikram Rao | Student Profile</title>
+  <!-- This <link> pulls in the whole Bootstrap stylesheet from a CDN (a fast
+       online file host). Loading it makes ALL Bootstrap classes available. -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- This loads Bootstrap Icons so we can use icons like <i class="bi bi-..."> -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+<!-- Bootstrap classes on <body>: "bg-light" = a light grey background. -->
+<body class="bg-light">
+
+  <!-- ===== NAVBAR ===== -->
+  <!-- Bootstrap navbar classes:
+       navbar            = it's a navigation bar
+       navbar-expand-md  = show full menu on medium+ screens, collapse on small
+       navbar-dark       = light-coloured text (for dark backgrounds)
+       bg-primary        = Bootstrap's blue background colour -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <!-- "container" centres content and adds responsive side margins. -->
+    <div class="container">
+      <!-- The brand/logo link. fw-bold = font-weight bold. -->
+      <a class="navbar-brand fw-bold" href="#">Vikram Rao</a>
+      <!-- The "hamburger" button shown on small screens. data-bs-toggle and
+           data-bs-target tell Bootstrap's JavaScript to show/hide #nv when
+           it is clicked. -->
+      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nv">
+        <span class="navbar-toggler-icon"></span></button>
+      <!-- The collapsible menu. id="nv" matches the button's target above. -->
+      <div class="collapse navbar-collapse" id="nv">
+        <!-- ms-auto = "margin-start auto" = push the links to the right. -->
+        <ul class="navbar-nav ms-auto">
+          <!-- Each link jumps to a section by its id. -->
+          <li class="nav-item"><a class="nav-link" href="#info">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="#marks">Marks</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HEADER (profile photo + name + badges) ===== -->
+  <!-- my-5 = margin top & bottom, size 5 (Bootstrap's spacing scale 0-5). -->
+  <header class="container my-5">
+    <!-- "row" + "col-*" is Bootstrap's GRID SYSTEM. A row is split into 12
+         columns. align-items-center vertically centres; g-4 adds a gap. -->
+    <div class="row align-items-center g-4">
+      <!-- col-md-4 = take 4 of 12 columns on medium+ screens (one-third wide). -->
+      <div class="col-md-4 text-center">
+        <!-- img-fluid makes the image scale with its container; rounded-circle
+             crops it into a circle; shadow adds a drop shadow. The inline
+             style caps its width. -->
+        <img src="images/photo.jpg" alt="Vikram Rao portrait"
+             class="img-fluid rounded-circle shadow" style="max-width:220px">
+      </div>
+      <!-- col-md-8 = the other 8 columns (two-thirds wide). -->
+      <div class="col-md-8">
+        <h1>Vikram Rao</h1>
+        <!-- text-muted = greyed text; fs-5 = font size level 5. -->
+        <p class="text-muted fs-5">B.Tech ECE • 3rd Year • Roll 21EC042</p>
+        <!-- "badge" = small coloured label pills. bg-* sets their colour. -->
+        <span class="badge bg-success">CGPA 8.6</span>
+        <span class="badge bg-info text-dark">IEEE Member</span>
+        <span class="badge bg-warning text-dark">Robotics Club</span>
+        <div class="mt-3">  <!-- mt-3 = margin-top spacing -->
+          <!-- A download button. The "download" attribute tells the browser to
+               download the file rather than open it. The <i> is a Bootstrap
+               download icon. -->
+          <a href="files/resume.pdf" download class="btn btn-primary">
+            <i class="bi bi-download"></i> Resume</a>
+          <!-- btn-outline-primary = an outlined (not filled) button. -->
+          <a href="#contact" class="btn btn-outline-primary">Contact Me</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== PERSONAL INFORMATION TABLE ===== -->
+  <section id="info" class="container mb-5">
+    <h2 class="mb-3">Personal Information</h2>
+    <!-- Bootstrap table styles:
+         table           = base table styling
+         table-striped   = alternating row background colours
+         table-bordered  = borders around every cell
+         bg-white        = white background -->
+    <table class="table table-striped table-bordered bg-white">
+      <tbody>
+        <!-- Each <tr> is a table row; <th> is a header cell, <td> a data cell. -->
+        <tr><th>Email</th><td>vikram@college.edu</td></tr>
+        <tr><th>Phone</th><td>98xxxxxx21</td></tr>
+        <tr><th>City</th><td>Hyderabad</td></tr>
+        <tr><th>Skills</th><td>Python, MATLAB, PCB Design</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== SEMESTER MARKS TABLE ===== -->
+  <section id="marks" class="container mb-5">
+    <h2 class="mb-3">Semester Performance</h2>
+    <!-- table-responsive lets the table scroll sideways on small screens
+         instead of overflowing the page. -->
+    <div class="table-responsive">
+      <!-- table-hover highlights a row when you mouse over it. -->
+      <table class="table table-hover table-bordered bg-white align-middle">
+        <!-- <thead> is the header section; table-dark makes it dark-themed. -->
+        <thead class="table-dark">
+          <tr><th>Sem</th><th>SGPA</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>8.2</td><td><span class="badge bg-success">Pass</span></td></tr>
+          <tr><td>2</td><td>8.5</td><td><span class="badge bg-success">Pass</span></td></tr>
+          <tr><td>3</td><td>8.9</td><td><span class="badge bg-success">Pass</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <!-- bg-dark + text-white = dark footer with white text; py-4 = vertical padding. -->
+  <footer id="contact" class="bg-dark text-white text-center py-4">
+    <p class="mb-1 fs-4">
+      <!-- Social icons from Bootstrap Icons; mx-2 adds horizontal spacing. -->
+      <i class="bi bi-envelope mx-2"></i><i class="bi bi-github mx-2"></i>
+      <i class="bi bi-linkedin mx-2"></i></p>
+    <small>© 2026 Vikram Rao</small>
+  </footer>
+
+  <!-- This <script> loads Bootstrap's JavaScript. It is what makes interactive
+       parts work - here, the collapsing hamburger menu on small screens.
+       It is placed at the end of <body> so the page content loads first. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

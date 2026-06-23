@@ -1,0 +1,23 @@
+/* ===========================================================================
+   PRODUCT SHOWCASE - CUSTOM STYLES  -  style.css
+   ---------------------------------------------------------------------------
+   Bootstrap does almost all the work in this project. We only add two small
+   custom touches: a gently floating product image, and making the highlighted
+   "Pro" pricing card stand out by scaling it up.
+   =========================================================================== */
+
+/* Apply the "floaty" animation to the product image, looping forever. */
+.float-anim { animation: floaty 4s ease-in-out infinite; }
+
+/* The animation: move the image up by 18px at the halfway point, then back to
+   its start. Repeated, this makes it bob gently up and down. */
+@keyframes floaty { 0%,100% { transform: translateY(0); }      /* start & end position */
+                    50%     { transform: translateY(-18px); } } /* lifted up in the middle */
+
+/* Scale the "Most Popular" pricing card to 105% so it visually pops out from
+   the Basic and Max cards beside it. */
+.featured { transform: scale(1.05); }            /* the hero tier stands out */
+
+/* On small screens (phones, 767px and below) the cards stack vertically, so
+   the scaling looks odd - turn it off there. This is a responsive tweak. */
+@media (max-width: 767px) { .featured { transform: none; } }

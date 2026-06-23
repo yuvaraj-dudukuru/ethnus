@@ -1,0 +1,232 @@
+<!--
+  ===========================================================================
+   RESTAURANT LANDING PAGE  -  Restaurant_Landing_Page.html
+  ---------------------------------------------------------------------------
+   A one-page marketing site for an Indian restaurant, "Spice Route".
+
+   What's new in this project compared to Project 2:
+   - It mixes BOOTSTRAP (for layout/components) WITH a custom style.css
+     (for the unique brand colours, fonts and hover effects).
+   - It uses a Bootstrap MODAL: a pop-up "Book a Table" form.
+   - It embeds a Google Map with an <iframe>.
+   - It pays attention to ACCESSIBILITY (aria-* attributes) and SEO
+     (the <meta name="description">).
+  ===========================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- This description is the summary search engines (Google) show under the
+       page title in results. Good for SEO (Search Engine Optimisation). -->
+  <meta name="description" content="Experience authentic Indian cuisine at Spice Route. Fine dining with flavors carried from Hyderabad's old city.">
+  <title>Spice Route | Fine Indian Dining</title>
+  <!-- Load Bootstrap first... -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- ...then our own style.css AFTER it, so our custom rules can override
+       Bootstrap's defaults where we want a unique look. Order matters in CSS. -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<!-- sticky-top keeps the navbar pinned to the top while you scroll.
+     navbar-expand-lg = collapse into a hamburger below "large" screens. -->
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <!-- brand-font is OUR custom class (defined in style.css) for the fancy font. -->
+    <a class="navbar-brand brand-font" href="#">🌶 Spice Route</a>
+    <!-- Hamburger toggle button for small screens.
+         aria-controls / aria-expanded / aria-label are ACCESSIBILITY hints that
+         help screen-reader users understand what the button does. -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+      <!-- The inline filter:invert(1) flips the icon's colour to white. -->
+      <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+    </button>
+    <!-- The collapsible menu; id="nav" matches the button's data-bs-target. -->
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="#menu">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+          <!-- This button OPENS the modal. data-bs-toggle="modal" +
+               data-bs-target="#bookModal" tell Bootstrap to show the pop-up
+               whose id is "bookModal" (defined near the bottom of the page). -->
+          <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#bookModal">Book a Table</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO (full-screen banner with background image) ===== -->
+<!-- The Flexbox utility classes (d-flex, align-items-center,
+     justify-content-center) centre the text both vertically and horizontally.
+     The background image itself is set in style.css under ".hero". -->
+<header class="hero d-flex align-items-center justify-content-center text-center text-white">
+  <div class="container px-4">
+    <h1 class="brand-font">Spice Route</h1>
+    <!-- "lead" makes a stand-out, slightly larger paragraph. -->
+    <p class="lead mb-4">Authentic flavours. Modern soul.</p>
+    <a href="#menu" class="btn btn-primary-custom btn-lg mt-2">See Menu</a>
+  </div>
+</header>
+
+<!-- ===== MENU SECTION (dish cards) ===== -->
+<!-- py-5 = vertical padding; my-4 = vertical margin. -->
+<section id="menu" class="container py-5 my-4">
+  <h2 class="text-center mb-5 brand-font">Signature Dishes</h2>
+  <!-- g-4 adds gaps between the grid columns. -->
+  <div class="row g-4">
+    <!-- Each dish is a column. The col classes make it responsive:
+         col-12        = full width on phones (1 per row)
+         col-md-6      = half width on medium screens (2 per row)
+         col-lg-4      = one-third on large screens (3 per row) -->
+    <div class="col-12 col-md-6 col-lg-4">
+      <!-- "card" is a Bootstrap component; h-100 makes all cards equal height. -->
+      <div class="card h-100">
+        <!-- card-img-top = the image at the top of the card.
+             loading="lazy" delays loading the image until it's near the screen,
+             which speeds up the initial page load. -->
+        <img src="images/biryani.jpg" class="card-img-top" alt="Hyderabadi biryani" loading="lazy">
+        <div class="card-body p-4">
+          <!-- d-flex + justify-content-between puts the name on the left and the
+               price on the right of the same line. -->
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            Hyderabadi Biryani <span class="text-primary-custom fs-5">₹320</span>
+          </h5>
+          <p class="card-text text-muted mt-3">Slow-cooked basmati, saffron, and our secret blend of spices.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card h-100">
+        <img src="images/paneer.jpg" class="card-img-top" alt="Paneer tikka platter" loading="lazy">
+        <div class="card-body p-4">
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            Paneer Tikka <span class="text-primary-custom fs-5">₹260</span>
+          </h5>
+          <p class="card-text text-muted mt-3">Char-grilled cottage cheese marinated in yogurt and mint chutney.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card h-100">
+        <img src="images/dosa.jpg" class="card-img-top" alt="Crispy masala dosa" loading="lazy">
+        <div class="card-body p-4">
+          <h5 class="card-title d-flex justify-content-between align-items-center">
+            Masala Dosa <span class="text-primary-custom fs-5">₹180</span>
+          </h5>
+          <p class="card-text text-muted mt-3">Golden crisp crepe filled with spiced potato masala, served with sambar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT / OUR STORY ===== -->
+<section id="about" class="about-section py-5">
+  <div class="container py-4">
+    <!-- align-items-center vertically centres the image with the text. -->
+    <div class="row align-items-center g-5">
+      <div class="col-md-6">
+        <!-- img-fluid keeps the image responsive (never wider than its column). -->
+        <img src="images/hero.jpg" class="img-fluid about-image" alt="Restaurant interior" loading="lazy">
+      </div>
+      <div class="col-md-6">
+        <h2 class="brand-font mb-4">Our Story</h2>
+        <!-- An inline style sets extra line spacing just for this paragraph. -->
+        <p class="text-muted fs-5 mb-4" style="line-height: 1.8;">
+          Since 1998, three generations of chefs have served recipes carried from Hyderabad's old city — now plated for a new era. We believe in preserving traditions while embracing modern culinary artistry.
+        </p>
+        <!-- A pill-shaped rating badge. rounded-pill = fully rounded ends. -->
+        <span class="badge bg-white text-dark border p-3 fs-6 rounded-pill shadow-sm">
+          <span style="color: var(--primary-color);">★</span> 4.8 / 5 — Over 2,400 reviews
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER (hours, address, embedded map) ===== -->
+<footer class="text-white py-5">
+  <div class="container">
+    <div class="row g-4 mx-auto align-items-center">
+      <!-- Column 1: opening hours. -->
+      <div class="col-md-4 text-center text-md-start">
+        <h5 class="brand-font mb-3">Hours</h5>
+        <p class="mb-1 text-white-50">Monday – Sunday</p>
+        <p class="mb-0">11:00 AM – 11:00 PM</p>
+      </div>
+      <!-- Column 2: address. -->
+      <div class="col-md-4 text-center">
+        <h5 class="brand-font mb-3">Visit Us</h5>
+        <p class="mb-1 text-white-50">12-4-77 Charminar Rd</p>
+        <p class="mb-0">Hyderabad, Telangana</p>
+      </div>
+      <!-- Column 3: an embedded Google Map. An <iframe> displays another web
+           page (the map) inside this one. -->
+      <div class="col-md-4">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15231.25870020121!2d78.46337834999999!3d17.3752538!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb977fdb1a86cd%3A0xc6c429ea398bc8dc!2sCharminar%2C%20Hyderabad%2C%20Telangana%20500002!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                title="Restaurant location"
+                class="w-100 rounded shadow-sm border-0"
+                height="150"
+                loading="lazy"></iframe>
+      </div>
+    </div>
+    <!-- <hr> draws a horizontal divider line. -->
+    <hr class="mt-5 mb-4 border-secondary">
+    <p class="text-center mb-0 text-white-50"><small>&copy; 2026 Spice Route. All rights reserved.</small></p>
+  </div>
+</footer>
+
+<!-- ===== BOOKING MODAL (the pop-up form) ===== -->
+<!-- A modal is a dialog box that floats over the page. It stays HIDDEN until a
+     button with data-bs-target="#bookModal" is clicked.
+     - "fade" gives it a smooth fade-in animation.
+     - aria-hidden / aria-labelledby are accessibility attributes. -->
+<div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+  <!-- modal-dialog-centered vertically centres the pop-up on the screen. -->
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- The modal's title bar, with a close (X) button. -->
+      <div class="modal-header">
+        <h5 class="modal-title brand-font" id="bookModalLabel">Book a Table</h5>
+        <!-- data-bs-dismiss="modal" closes the pop-up when clicked. -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <!-- A <form> collects user input. (This demo doesn't send it anywhere.) -->
+      <form>
+        <div class="modal-body">
+          <!-- Each field has a <label> (connected via for="id") and an <input>. -->
+          <div class="mb-4">
+            <label for="guestName" class="form-label fw-semibold">Full Name</label>
+            <!-- "required" means the form won't submit if this is left empty. -->
+            <input type="text" class="form-control" id="guestName" placeholder="Enter your name" required>
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6">
+              <label for="bookDate" class="form-label fw-semibold">Date</label>
+              <!-- type="date" shows a date-picker calendar. -->
+              <input type="date" class="form-control" id="bookDate" required>
+            </div>
+            <div class="col-12 col-sm-6">
+              <label for="guestCount" class="form-label fw-semibold">Number of Guests</label>
+              <!-- type="number" with min/max limits the allowed values (1-12). -->
+              <input type="number" class="form-control" id="guestCount" min="1" max="12" value="2" required>
+            </div>
+          </div>
+          <!-- w-100 = full-width button. -->
+          <button type="submit" class="btn btn-primary-custom w-100 py-2">Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap's JavaScript - REQUIRED for the navbar toggle AND the modal to
+     work. Without it, the "Book a Table" pop-up would never open. -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

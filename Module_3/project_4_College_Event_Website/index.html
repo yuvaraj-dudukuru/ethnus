@@ -1,0 +1,171 @@
+<!--
+  ===========================================================================
+   COLLEGE EVENT WEBSITE  -  index.html
+  ---------------------------------------------------------------------------
+   A landing page for a college tech fest, "TechNova 2026".
+
+   What's new in this project:
+   - An animated gradient hero (the colour shifts - defined in style.css).
+   - Advanced HTML TABLES using "rowspan" to merge cells.
+   - A registration FORM with real-time VALIDATION powered by a small
+     JavaScript snippet (Bootstrap's "needs-validation" pattern).
+   - A definition list (<dl>) for the FAQ section.
+  ===========================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechNova 2026 - National Level Tech Fest</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Our small custom stylesheet (just the animated hero + image sizing). -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<!-- "hero-grad" is our custom class (in style.css) that creates the moving
+     gradient background. The d-flex/flex-column/justify-content-center/
+     align-items-center utilities stack and centre the content. -->
+<header class="hero-grad text-white text-center d-flex flex-column
+               justify-content-center align-items-center">
+  <!-- display-2 = a very large Bootstrap heading style; fw-bold = bold. -->
+  <h1 class="display-2 fw-bold">TechNova 2026</h1>
+  <p class="fs-4">National Level Tech Fest • 14–15 August • Free Entry</p>
+  <!-- btn-light = a white button; btn-lg = large. mt-3 = margin-top spacing. -->
+  <a href="#register" class="btn btn-light btn-lg mt-3">Register Now</a>
+</header>
+
+<!-- ===== EVENT SCHEDULE (table with merged cells) ===== -->
+<section id="schedule" class="container py-5">
+  <h2 class="text-center mb-4">Event Schedule</h2>
+  <!-- table-responsive lets the table scroll sideways on tiny screens. -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-dark">
+        <tr><th>Day</th><th>Time</th><th>Event</th><th>Venue</th></tr>
+      </thead>
+      <tbody>
+        <!-- rowspan="3" makes this single "Day 1" cell stretch DOWN over 3 rows,
+             so it acts as a shared label for the next three time slots. Because
+             of that, the following two <tr> rows have NO Day cell of their own. -->
+        <tr><td rowspan="3">Day 1</td>
+            <td>10:00</td><td>Inauguration</td><td>Main Audi</td></tr>
+        <tr><td>11:30</td><td>Hackathon Kickoff</td><td>Lab Block</td></tr>
+        <tr><td>15:00</td><td>AI Workshop</td><td>Seminar Hall</td></tr>
+        <!-- rowspan="2" merges "Day 2" over the next two rows. -->
+        <tr><td rowspan="2">Day 2</td>
+            <td>10:00</td><td>Project Expo</td><td>Quadrangle</td></tr>
+        <tr><td>16:00</td><td>Prize Ceremony</td><td>Main Audi</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SPEAKERS ===== -->
+<section id="speakers" class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Speakers</h2>
+    <!-- row-cols-* controls how many cards appear per row at each screen size:
+         1 on phones, 2 on medium, 4 on large screens. g-4 adds the gaps. -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+      <!-- repeat this col 4× with different data -->
+      <div class="col"><div class="card h-100 text-center shadow-sm">
+        <img src="images/sp1.jpg" class="card-img-top" alt="Dr. N. Rao headshot">
+        <div class="card-body">
+          <h5 class="card-title mb-0">Dr. N. Rao</h5>
+          <small class="text-muted">AI Lead, TechCorp</small>
+          <!-- A small badge labelling this speaker as the keynote. -->
+          <p class="card-text mt-2"><span class="badge bg-primary">Keynote</span></p>
+        </div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REGISTRATION FORM (with validation) ===== -->
+<section id="register" class="container py-5">
+  <h2 class="text-center mb-4">Register</h2>
+  <!-- "needs-validation" marks this form for our JavaScript below.
+       "novalidate" turns OFF the browser's default pop-up messages so that
+       Bootstrap's nicer styled validation can take over instead. -->
+  <form class="col-12 col-md-6 mx-auto needs-validation" novalidate>   <!-- validation styles -->
+    <div class="mb-3"><label class="form-label">Full Name</label>
+      <!-- required = must be filled; minlength="3" = at least 3 characters. -->
+      <input type="text" class="form-control" required minlength="3">
+      <!-- "invalid-feedback" text only appears if this field fails validation. -->
+      <div class="invalid-feedback">Please enter your name (3+ chars).</div></div>
+    <div class="mb-3"><label class="form-label">College Email</label>
+      <!-- type="email" makes the browser check it looks like an email address. -->
+      <input type="email" class="form-control" required>
+      <div class="invalid-feedback">Valid email required.</div></div>
+    <div class="mb-3"><label class="form-label">Event</label>
+      <!-- A dropdown menu. The first (empty) option forces a real choice
+           because the field is "required". -->
+      <select class="form-select" required>
+        <option value="">Choose…</option>
+        <option>Hackathon</option><option>Project Expo</option><option>AI Workshop</option>
+      </select></div>
+    <button class="btn btn-primary w-100">Submit Registration</button>
+  </form>
+</section>
+
+<!-- ===== FAQ + SPONSORS ===== -->
+<section id="faq" class="bg-light py-5">
+  <div class="container col-lg-8">
+    <h2 class="text-center mb-4">FAQ</h2>
+    <!-- <dl> is a "description list" - perfect for Q&A. Inside it:
+         <dt> = the term/question, <dd> = the description/answer. -->
+    <dl>
+      <dt>Is registration free?</dt><dd class="text-muted mb-3">Yes — for all students with ID.</dd>
+      <dt>Team size for hackathon?</dt><dd class="text-muted mb-3">2–4 members.</dd>
+      <dt>Certificates?</dt><dd class="text-muted">Digital certificates for all participants.</dd>
+    </dl>
+    <!-- Sponsor logos, laid out in a centred, wrapping flex row. -->
+    <div class="d-flex justify-content-center align-items-center gap-4 flex-wrap mt-4">
+      <img src="images/logo1.jpg" alt="Sponsor TechCorp" height="46">
+      <img src="images/logo2.jpg" alt="Sponsor DataInc" height="46">
+      <img src="images/logo3.jpg" alt="Sponsor CloudCo" height="46">
+    </div>
+  </div>
+</section>
+
+<!-- Bootstrap JS (needed for components and not strictly for our form, but good to include) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ===== CUSTOM FORM-VALIDATION SCRIPT =====
+     JavaScript adds BEHAVIOUR to a page. This is Bootstrap's standard snippet
+     for validating forms. Reading it step by step: -->
+<script>
+  // Form validation script
+  // This is an IIFE: a function that runs itself immediately - "(function(){ ... })()".
+  // It keeps our variables private so they don't clash with anything else.
+  (function () {
+    'use strict'  // Turns on stricter error-checking in the browser.
+
+    // Find EVERY element on the page with the class "needs-validation".
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // querySelectorAll returns a list-like object; this converts it to a real
+    // array so we can loop over each form with .forEach().
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        // For each form, listen for the "submit" event (when the user clicks
+        // the submit button).
+        form.addEventListener('submit', function (event) {
+          // checkValidity() returns false if ANY field breaks its rules
+          // (empty required field, bad email, name too short, etc.).
+          if (!form.checkValidity()) {
+            event.preventDefault()    // stop the form from actually submitting
+            event.stopPropagation()   // stop the event bubbling up further
+          }
+          // Adding this class makes Bootstrap show the green "valid" and red
+          // "invalid" highlights + the invalid-feedback messages.
+          form.classList.add('was-validated')
+        }, false)
+      })
+  })()
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+/* ===========================================================================
+   COLLEGE EVENT - CUSTOM STYLES  -  style.css
+   ---------------------------------------------------------------------------
+   This project leans heavily on Bootstrap, so we only need a TINY bit of
+   custom CSS here: an animated, colour-shifting hero banner and a fixed image
+   height for the speaker cards.
+   =========================================================================== */
+
+/* The hero banner with a moving multi-colour gradient. */
+.hero-grad { min-height: 88vh;   /* tall banner: 88% of the screen height */
+             /* A diagonal (120deg) gradient blending blue -> purple -> pink. */
+             background: linear-gradient(120deg, #0d6efd, #6610f2, #d63384);
+             /* Make the gradient 2x larger than the box so there's room to
+                slide it around, then run the "shift" animation forever. */
+             background-size: 200% 200%; animation: shift 8s ease infinite; }
+
+/* The animation: slide the gradient's position left<->right over 8 seconds,
+   which makes the colours appear to flow/breathe. */
+@keyframes shift { 0%,100% { background-position: 0% 50%; }   /* start & end on the left */
+                   50%     { background-position: 100% 50%; } } /* middle on the right */
+
+/* Force every speaker photo to the same height and crop nicely (no stretching),
+   so all the cards line up evenly. */
+.card-img-top { height: 220px; object-fit: cover; }

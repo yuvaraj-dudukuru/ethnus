@@ -1,0 +1,191 @@
+<!--
+  ===========================================================================
+   PERSONAL PORTFOLIO WEBSITE  -  index.html
+  ---------------------------------------------------------------------------
+   This is a single-page personal portfolio for "Asha Verma".
+   It is hand-coded with plain HTML + CSS (no frameworks) and features a
+   modern "glassmorphism" look (frosted-glass cards) with a dark theme.
+
+   HTML tip for beginners:
+   - HTML describes the STRUCTURE/content of the page (headings, text, links).
+   - The actual look (colours, spacing, animations) lives in style.css.
+   - Comments like this one are written between <!-- and --> and are ignored
+     by the browser; they exist only to explain the code to humans.
+  ===========================================================================
+-->
+<!DOCTYPE html>           <!-- Tells the browser: "this is a modern HTML5 page" -->
+<html lang="en">          <!-- The root of the page; lang="en" = content is English -->
+<head>
+  <!-- <head> holds SETTINGS and links, not visible page content. -->
+  <meta charset="UTF-8">  <!-- Lets the page show any character/emoji correctly -->
+  <!-- Makes the site scale properly on phones (responsive design). -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asha Verma | Portfolio</title>  <!-- Text shown on the browser tab -->
+
+  <!-- Modern Google Fonts -->
+  <!-- "preconnect" warms up a connection to Google's font servers early,
+       so the fonts download a little faster. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- This <link> actually downloads two font families: "Inter" and "Outfit". -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Connects this page to our stylesheet so all the CSS rules apply. -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- <body> holds everything the visitor actually SEES on the page. -->
+
+  <!-- Animated Background Elements -->
+  <!-- These two empty <div>s are just coloured blobs. CSS blurs them and
+       floats them around to create a soft animated background. -->
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+
+  <!-- ===== NAVBAR (top navigation bar) ===== -->
+  <header class="nav">
+    <!-- The site logo/name. The inner <span> colours ".dev" differently. -->
+    <span class="logo">Asha<span class="highlight">.dev</span></span>
+    <!-- <nav> groups the navigation links. Each href="#id" jumps to the
+         section on this same page that has that matching id. -->
+    <nav>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ===== HERO (the big welcome area at the top) ===== -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <!-- A small pill-shaped label. -->
+      <div class="badge">Available for Work</div>
+      <!-- <h1> is the most important heading on the page (only one per page).
+           The <span> applies a gradient colour to the name "Asha". -->
+      <h1>Hi, I'm <span class="text-gradient">Asha</span> 👋</h1>
+      <!-- A short introduction paragraph. -->
+      <p class="hero-subtitle">Aspiring Full-Stack Developer crafting digital experiences with Python, SQL, and Web Technologies.</p>
+      <!-- Two call-to-action buttons. They are really just links styled as buttons. -->
+      <div class="hero-actions">
+        <a href="#projects" class="btn btn-primary">View My Work</a>
+        <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT SECTION ===== -->
+  <!-- id="about" is the target the "About" nav link jumps to. -->
+  <section id="about" class="section">
+    <div class="section-header">
+      <h2>About Me</h2>            <!-- Section title -->
+      <div class="section-line"></div>  <!-- A small decorative underline -->
+    </div>
+    <!-- A "glass-card" is our frosted-glass styled box (defined in CSS). -->
+    <div class="about-flex glass-card">
+      <div class="about-image-wrapper">
+        <!-- <img> shows a picture. src = where it loads from, alt = a text
+             description for screen readers / if the image fails to load. -->
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop" alt="Portrait of Asha Verma">
+        <div class="image-backdrop"></div>  <!-- A coloured shape behind the photo -->
+      </div>
+      <div class="about-text">
+        <p>I'm a B.Tech CSE student who loves turning ideas into working software. I've built database apps in Python and now craft responsive, dynamic websites.</p>
+        <p>My goal is to become a full-stack developer by 2027, blending my backend data skills with beautiful frontend interfaces.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SKILLS SECTION ===== -->
+  <section id="skills" class="section">
+    <div class="section-header">
+      <h2>Skills</h2>
+      <div class="section-line"></div>
+    </div>
+    <!-- A grid of skill cards. The CSS arranges these into responsive columns. -->
+    <div class="skill-grid">
+      <!-- Each "skill" card is an emoji icon plus a label. -->
+      <div class="skill glass-card">
+        <div class="skill-icon">🌐</div>
+        <span>HTML5</span>
+      </div>
+      <div class="skill glass-card">
+        <div class="skill-icon">🎨</div>
+        <span>CSS3</span>
+      </div>
+      <div class="skill glass-card">
+        <div class="skill-icon">🐍</div>
+        <span>Python</span>
+      </div>
+      <div class="skill glass-card">
+        <div class="skill-icon">🗄️</div>
+        <span>MySQL</span>
+      </div>
+      <div class="skill glass-card">
+        <div class="skill-icon">🅱️</div>
+        <span>Bootstrap</span>
+      </div>
+      <div class="skill glass-card">
+        <div class="skill-icon">📦</div>
+        <span>Git</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS SECTION ===== -->
+  <section id="projects" class="section">
+    <div class="section-header">
+      <h2>Projects</h2>
+      <div class="section-line"></div>
+    </div>
+    <!-- A grid of project cards. <article> is used because each card is a
+         self-contained piece of content. -->
+    <div class="card-grid">
+      <article class="card glass-card">
+        <div class="card-content">
+          <span class="card-tag">Python + MySQL</span>  <!-- A small category label -->
+          <h3>Student DB System</h3>
+          <p>A robust CRUD application with transaction management for educational institutions.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="card-link">View Code →</a>  <!-- href="#" = placeholder link -->
+        </div>
+      </article>
+      <article class="card glass-card">
+        <div class="card-content">
+          <span class="card-tag">SQLite</span>
+          <h3>Expense Tracker</h3>
+          <p>A personal finance tool generating detailed monthly spending reports automatically.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="card-link">View Code →</a>
+        </div>
+      </article>
+      <article class="card glass-card">
+        <div class="card-content">
+          <span class="card-tag">HTML/CSS</span>
+          <h3>This Portfolio</h3>
+          <p>A hand-coded, responsive, and dynamic personal website featuring glassmorphism.</p>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="card-link">View Code →</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER / CONTACT ===== -->
+  <!-- <footer> is the bottom of the page; id="contact" is the nav target. -->
+  <footer id="contact" class="glass-card footer-card">
+    <div class="footer-content">
+      <h2>Let's build something together.</h2>
+      <div class="contact-links">
+        <!-- "mailto:" opens the visitor's email app to send a message. -->
+        <a href="mailto:asha@mail.com" class="contact-link">📧 asha@mail.com</a>
+        <a href="https://github.com/asha" class="contact-link">🐙 github.com/asha</a>
+      </div>
+      <p class="copyright">© 2026 Asha Verma. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

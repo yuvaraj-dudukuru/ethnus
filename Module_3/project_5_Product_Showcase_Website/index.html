@@ -1,0 +1,232 @@
+<!--
+  ===========================================================================
+   PRODUCT SHOWCASE WEBSITE  -  index.html
+  ---------------------------------------------------------------------------
+   A product/sales page for fictional wireless earbuds, "AuraBuds Pro".
+
+   This is a classic "e-commerce product" layout. Things to notice:
+   - A "floating" product image (gentle up/down animation from style.css).
+   - A FEATURES strip using Bootstrap Icons.
+   - A PRICING section with three tiers, one highlighted as "Most Popular".
+   - A SPECIFICATIONS table and a CUSTOMER REVIEWS section with star icons.
+   - A "Buy" MODAL pop-up with quantity + colour options.
+  ===========================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraBuds Pro - Product Showcase</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons (for the feature icons and review stars) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <!-- Custom Styles (just the floating animation + featured-card scaling) -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== HERO (product intro: text on the left, image on the right) ===== -->
+<header class="container py-5">
+  <!-- align-items-center vertically centres the two columns; g-5 adds a gap. -->
+  <div class="row align-items-center g-5">
+    <div class="col-md-6">
+      <!-- A red "NEW 2026" label. -->
+      <span class="badge bg-danger mb-2">NEW 2026</span>
+      <!-- display-4 = a large display heading. -->
+      <h1 class="display-4 fw-bold">AuraBuds Pro</h1>
+      <p class="lead text-muted">48-hour battery. Studio silence. Featherweight.</p>
+      <!-- Two buttons: a solid dark "Buy" and an outlined "Specs". -->
+      <a href="#pricing" class="btn btn-dark btn-lg">Buy ₹4,999</a>
+      <a href="#specs" class="btn btn-outline-dark btn-lg">Specs</a>
+    </div>
+    <div class="col-md-6 text-center">
+      <!-- "float-anim" is our custom class that makes the image bob gently.
+           img-fluid keeps it responsive. -->
+      <img src="images/buds.png" class="img-fluid float-anim" alt="AuraBuds Pro earbuds">
+    </div>
+  </div>
+</header>
+
+<!-- ===== FEATURES STRIP (three icons + labels) ===== -->
+<section class="bg-light py-5">
+  <div class="container row mx-auto text-center g-4">
+    <!-- Each feature is a column with a Bootstrap Icon (the <i> tag),
+         a heading, and a short note. fs-1 = a very large icon size. -->
+    <div class="col-md-4"><i class="bi bi-battery-full fs-1 text-primary"></i>
+      <h5 class="mt-2">48 h Battery</h5><p class="text-muted">Case included.</p></div>
+    <div class="col-md-4"><i class="bi bi-volume-mute fs-1 text-primary"></i>
+      <h5 class="mt-2">Active ANC</h5><p class="text-muted">-38 dB noise.</p></div>
+    <div class="col-md-4"><i class="bi bi-droplet fs-1 text-primary"></i>
+      <h5 class="mt-2">IPX5</h5><p class="text-muted">Sweat & rain proof.</p></div>
+  </div>
+</section>
+
+<!-- ===== PRICING (three tiers) ===== -->
+<section id="pricing" class="container py-5">
+  <h2 class="text-center mb-4">Choose Your Bundle</h2>
+  <div class="row g-4 justify-content-center">
+    <!-- TIER 1: Basic -->
+    <div class="col-md-4"><div class="card h-100 text-center">
+      <div class="card-body"><h5>Basic</h5><h3>₹4,999</h3>
+        <p class="text-muted">Buds + case</p>
+        <!-- Each "Buy" button opens the same shared #buyModal pop-up. -->
+        <button class="btn btn-outline-dark" data-bs-toggle="modal"
+                data-bs-target="#buyModal">Buy</button></div></div></div>
+    <!-- TIER 2: Pro - the HIGHLIGHTED tier.
+         "featured" (our custom class) scales it up slightly; border-primary +
+         shadow make it stand out; position-relative anchors the badge. -->
+    <div class="col-md-4"><div class="card h-100 text-center border-primary
+                                      shadow position-relative featured">
+      <!-- This badge floats at the top-centre of the card. The position-absolute
+           + top-0 + start-50 + translate-middle classes centre it on the edge. -->
+      <span class="badge bg-primary position-absolute top-0 start-50
+                   translate-middle">Most Popular</span>
+      <div class="card-body"><h5>Pro</h5><h3>₹5,999</h3>
+        <p class="text-muted">+ wireless charging + 2 yr warranty</p>
+        <button class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#buyModal">Buy</button></div></div></div>
+    <!-- TIER 3: Max -->
+    <div class="col-md-4"><div class="card h-100 text-center">
+      <div class="card-body"><h5>Max</h5><h3>₹7,499</h3>
+        <p class="text-muted">+ premium tips + travel pouch</p>
+        <button class="btn btn-outline-dark" data-bs-toggle="modal"
+                data-bs-target="#buyModal">Buy</button></div></div></div>
+  </div>
+</section>
+
+<!-- ===== SPECIFICATIONS TABLE ===== -->
+<section id="specs" class="container py-5">
+  <h2 class="text-center mb-4">Specifications</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <table class="table table-striped table-bordered">
+        <tbody>
+          <!-- scope="row" tells screen readers this <th> labels its whole row. -->
+          <tr>
+            <th scope="row">Battery Life</th>
+            <td>48 hours with charging case</td>
+          </tr>
+          <tr>
+            <th scope="row">Noise Cancellation</th>
+            <td>Active Noise Cancellation up to -38 dB</td>
+          </tr>
+          <tr>
+            <th scope="row">Water Resistance</th>
+            <td>IPX5 (Sweat and rain proof)</td>
+          </tr>
+          <tr>
+            <th scope="row">Weight</th>
+            <td>4.2g per earbud</td>
+          </tr>
+          <tr>
+            <th scope="row">Connectivity</th>
+            <td>Bluetooth 5.3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CUSTOMER REVIEWS ===== -->
+<section class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Customer Reviews</h2>
+    <div class="row g-4">
+      <!-- REVIEW 1 - five full stars. -->
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Amazing Sound</h5>
+            <!-- text-warning makes the star icons gold/yellow. Each <i> is one
+                 filled star icon from Bootstrap Icons. -->
+            <p class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+            </p>
+            <p class="card-text">"The ANC is incredible. I use them on my commute every day and they block out everything."</p>
+          </div>
+          <!-- The reviewer's name sits in the card footer. -->
+          <div class="card-footer bg-transparent border-top-0">
+            <small class="text-muted">- Sarah J.</small>
+          </div>
+        </div>
+      </div>
+      <!-- REVIEW 2 - 4.5 stars (note the "star-half" icon at the end). -->
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Extremely Comfortable</h5>
+            <p class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+            </p>
+            <p class="card-text">"I forget I have them in. The battery lasts forever. Definitely recommend."</p>
+          </div>
+          <div class="card-footer bg-transparent border-top-0">
+            <small class="text-muted">- Mike T.</small>
+          </div>
+        </div>
+      </div>
+      <!-- REVIEW 3 - five full stars. -->
+      <div class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Best Value</h5>
+            <p class="text-warning mb-2">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+            </p>
+            <p class="card-text">"Unbeatable quality for the price. Highly recommend the Pro bundle."</p>
+          </div>
+          <div class="card-footer bg-transparent border-top-0">
+            <small class="text-muted">- Emily R.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BUY MODAL (shared pop-up, opened by every "Buy" button) ===== -->
+<div class="modal fade" id="buyModal" tabindex="-1" aria-labelledby="buyModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="buyModalLabel">Complete Your Purchase</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Quantity picker (number input, minimum 1). -->
+          <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" class="form-control" id="quantity" value="1" min="1">
+          </div>
+          <!-- Colour dropdown. "selected" pre-picks the first option. -->
+          <div class="mb-3">
+            <label for="color" class="form-label">Color</label>
+            <select class="form-select" id="color">
+              <option value="midnight" selected>Midnight Black</option>
+              <option value="starlight">Starlight White</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <!-- "Close" dismisses the modal; "Proceed" is a placeholder action. -->
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <p class="mb-0">&copy; 2026 AuraBuds. All rights reserved.</p>
+</footer>
+
+<!-- Bootstrap JS Bundle - powers the Buy modal pop-up. -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

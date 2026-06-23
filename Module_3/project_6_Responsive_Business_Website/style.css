@@ -1,0 +1,30 @@
+/* ===========================================================================
+   BUSINESS WEBSITE - CUSTOM STYLES  -  style.css
+   ---------------------------------------------------------------------------
+   A small custom layer on top of Bootstrap: a background-image hero, a hover
+   "lift" effect for cards, and custom footer link colours.
+   =========================================================================== */
+
+/* A custom variable for the brand's yellow accent colour. */
+:root { --accent: #ffc107; }
+
+/* The hero banner. */
+.biz-hero { min-height: 86vh;   /* tall banner: 86% of the screen height */
+            /* Two stacked backgrounds (top one listed first):
+               1. a semi-transparent dark-blue overlay so white text is readable
+               2. a photo from Unsplash, sized to "cover" and centred.
+               The rgba(...) overlay is repeated for both colour stops, which
+               just tints the whole image evenly. */
+            background: linear-gradient(rgba(13,32,73,.75), rgba(13,32,73,.75)),
+                        url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1920&q=80') center/cover; }
+
+/* Give cards a smooth hover-lift effect (used if/when cards are added to other
+   pages of this site). transition animates the movement + shadow change. */
+.card { transition: transform .3s, box-shadow .3s; }
+.card:hover { transform: translateY(-6px);   /* lift up 6px on hover */
+              box-shadow: 0 12px 24px rgba(0,0,0,.15); }  /* deeper shadow */
+
+/* Footer links: soft light-blue normally... */
+footer a { color: #cfd8ff; text-decoration: none; }
+/* ...turning to the yellow accent colour on hover. */
+footer a:hover { color: var(--accent); }
