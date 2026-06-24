@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ s.name }} Details</h1>
+<p>Roll: {{ s.roll }}</p>
+<p>Email: {{ s.email }}</p>
+<p>Marks: {{ s.marks }}</p>
+<p>Department: {{ s.department.name }}</p>
+{% if s.photo %}
+<img src="{{ s.photo.url }}" alt="{{ s.name }}" width="150">
+{% endif %}
+<a href="{% url 'students:index' %}" class="btn btn-secondary">Back</a>
+{% endblock %}
