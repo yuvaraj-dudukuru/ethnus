@@ -1,0 +1,17 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h2>Issue Book: {{ book.title }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if form.non_field_errors %}
+    <div class="alert">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+    <button type="submit" class="btn">Issue Book</button>
+    <a href="{% url 'library:book_detail' book.pk %}" class="btn">Cancel</a>
+</form>
+{% endblock %}

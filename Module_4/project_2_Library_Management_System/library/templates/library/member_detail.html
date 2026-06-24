@@ -1,0 +1,50 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h2>{{ member.name }}</h2>
+<p><strong>Email:</strong> {{ member.email }}</p>
+<p><strong>Joined:</strong> {{ member.joined }}</p>
+<p><strong>Total Fines:</strong> ${{ total_fine }}</p>
+
+<h3>Issued Books</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Fine</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for issue in issues %}
+        <tr>
+            <td><a href="{% url 'library:book_detail' issue.book.pk %}">{{ issue.book.title }}</a></td>
+            <td>{{ issue.issue_date }}</td>
+            <td>{{ issue.due_date }}</td>
+            <td>
+                {% if issue.returned %}
+                    Returned on {{ issue.return_date }}
+                {% else %}
+                    Active
+                {% endif %}
+            </td>
+            <td>${{ issue.fine }}</td>
+            <td>
+                {% if not issue.returned %}
+                    <a href="{% url 'library:return_book' issue.pk %}" class="btn btn-danger">Return</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No books issued.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'library:member_list' %}" class="btn" style="margin-top: 1rem;">Back to Members</a>
+{% endblock %}

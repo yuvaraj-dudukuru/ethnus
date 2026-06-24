@@ -1,0 +1,27 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h2>{{ book.title }}</h2>
+<p><strong>Author:</strong> {{ book.author.name }}</p>
+<p><strong>ISBN:</strong> {{ book.isbn }}</p>
+<p><strong>Total Copies:</strong> {{ book.copies_total }}</p>
+<p><strong>Available Copies:</strong> {{ book.copies_available }}</p>
+
+<h3>Recent Issues</h3>
+<ul>
+    {% for issue in book.issues.all %}
+    <li>
+        Issued to <a href="{% url 'library:member_detail' issue.member.pk %}">{{ issue.member.name }}</a>
+        on {{ issue.issue_date }} (Due: {{ issue.due_date }})
+        - {% if issue.returned %}Returned{% else %}Not Returned{% endif %}
+    </li>
+    {% empty %}
+    <li>No issues yet.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'library:book_list' %}" class="btn">Back to Books</a>
+{% if book.is_available %}
+<a href="{% url 'library:issue_book' book.pk %}" class="btn">Issue Book</a>
+{% endif %}
+{% endblock %}
