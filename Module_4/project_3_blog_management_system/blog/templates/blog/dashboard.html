@@ -1,0 +1,22 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<h2>My Dashboard</h2>
+<div class="dashboard-stats">
+    <p>Total posts: {{ posts.count }}</p>
+</div>
+
+<div class="post-list">
+    <h3>My Posts</h3>
+    {% for post in posts %}
+    <div class="post-card">
+        <h4><a href="{% if post.status == 'P' %}{{ post.get_absolute_url }}{% else %}{% url 'blog:post_update' post.slug %}{% endif %}">{{ post.title }}</a></h4>
+        <p>Status: {% if post.status == 'P' %}Published{% else %}Draft{% endif %}</p>
+        <p>Category: {{ post.category }}</p>
+        <p><a href="{% url 'blog:post_update' post.slug %}">Edit</a></p>
+    </div>
+    {% empty %}
+    <p>You haven't written any posts yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
