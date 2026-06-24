@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h2 class="fw-bold">Browse Jobs</h2>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <form action="{% url 'job_list' %}" method="get" class="d-flex">
+            <input type="text" name="q" class="form-control me-2" placeholder="Search..." value="{{ request.GET.q }}">
+            <select name="jtype" class="form-select me-2 w-auto">
+                <option value="">All</option>
+                <option value="FT" {% if request.GET.jtype == 'FT' %}selected{% endif %}>Full Time</option>
+                <option value="PT" {% if request.GET.jtype == 'PT' %}selected{% endif %}>Part Time</option>
+                <option value="CT" {% if request.GET.jtype == 'CT' %}selected{% endif %}>Contract</option>
+                <option value="IN" {% if request.GET.jtype == 'IN' %}selected{% endif %}>Internship</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Filter</button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for job in jobs %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 card-hover border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold text-truncate" title="{{ job.title }}">{{ job.title }}</h5>
+                        <span class="badge bg-primary badge-custom">{{ job.get_jtype_display }}</span>
+                    </div>
+                    <h6 class="card-subtitle mb-3 text-muted"><i class="bi bi-building me-1"></i>{{ job.company }}</h6>
+                    <p class="card-text text-muted mb-2"><i class="bi bi-geo-alt me-1"></i>{{ job.location }}</p>
+                    {% if job.salary %}
+                        <p class="card-text text-success mb-3"><i class="bi bi-cash me-1"></i>{{ job.salary }}</p>
+                    {% endif %}
+                    <p class="card-text small text-muted text-truncate">{{ job.description|striptags }}</p>
+                </div>
+                <div class="card-footer bg-white border-0 pb-3 pt-0">
+                    <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-primary w-100 rounded-pill">View Details</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-search display-1 text-muted mb-3"></i>
+            <h3>No jobs found</h3>
+            <p class="text-muted">Try adjusting your search filters.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

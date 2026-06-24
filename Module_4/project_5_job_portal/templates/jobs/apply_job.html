@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4 p-md-5">
+                <h3 class="fw-bold text-primary mb-2">Apply for Role</h3>
+                <h5 class="text-muted mb-4">{{ job.title }} at {{ job.company }}</h5>
+                
+                <div class="alert alert-info border-0 rounded-3 mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>Please upload your resume in PDF format (Max 2MB).
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2 text-uppercase fw-bold">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

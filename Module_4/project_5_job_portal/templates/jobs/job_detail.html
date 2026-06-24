@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'job_list' %}" class="text-decoration-none">Jobs</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ job.title }}</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-2">{{ job.title }}</h2>
+                        <h5 class="text-muted"><i class="bi bi-building me-2"></i>{{ job.company }}</h5>
+                    </div>
+                    <span class="badge bg-primary fs-6 py-2 px-3 rounded-pill mt-3 mt-md-0">{{ job.get_jtype_display }}</span>
+                </div>
+
+                <div class="row mb-4 g-3">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bi bi-geo-alt fs-4 me-2"></i>
+                            <div>
+                                <small class="d-block">Location</small>
+                                <span class="fw-semibold text-dark">{{ job.location }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if job.salary %}
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bi bi-cash fs-4 me-2"></i>
+                            <div>
+                                <small class="d-block">Salary</small>
+                                <span class="fw-semibold text-dark">{{ job.salary }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <i class="bi bi-calendar-event fs-4 me-2"></i>
+                            <div>
+                                <small class="d-block">Posted</small>
+                                <span class="fw-semibold text-dark">{{ job.posted|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h4 class="fw-bold mb-3">Job Description</h4>
+                <div class="job-description lh-lg text-muted">
+                    {{ job.description|linebreaks }}
+                </div>
+
+                <div class="mt-5 pt-3">
+                    {% if user.is_authenticated %}
+                        {% if user.profile.role == 'C' %}
+                            <a href="{% url 'apply_job' job.pk %}" class="btn btn-primary btn-lg rounded-pill px-5">Apply Now</a>
+                        {% elif user.profile.role == 'R' and job.recruiter == user %}
+                            <a href="{% url 'job_update' job.pk %}" class="btn btn-outline-secondary rounded-pill px-4">Edit Job</a>
+                            <a href="{% url 'job_applicants' job.pk %}" class="btn btn-outline-primary rounded-pill px-4 ms-2">View Applicants</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}?next={% url 'job_detail' job.pk %}" class="btn btn-primary btn-lg rounded-pill px-5">Login to Apply</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

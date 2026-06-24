@@ -1,0 +1,23 @@
+{% extends 'store/base.html' %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center mt-5">
+        <h2>Complete Your Order</h2>
+        <p class="lead">You are about to place an order for the items in your cart.</p>
+        
+        {% if cart_has_items %}
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success btn-lg px-5">Confirm and Pay</button>
+        </form>
+        {% else %}
+        <div class="alert alert-warning mt-4">
+            Your cart is empty. Please add items to your cart before checking out.
+        </div>
+        <a href="{% url 'store:product_list' %}" class="btn btn-primary mt-3">Back to Store</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

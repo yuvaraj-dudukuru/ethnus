@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'recruiter_dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ job.title }} Applicants</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Applicants for {{ job.title }}</h2>
+        <p class="text-muted mb-0">{{ applications.count }} total application{{ applications.count|pluralize }}</p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Candidate</th>
+                        <th>Applied On</th>
+                        <th>Resume</th>
+                        <th>Status</th>
+                        <th class="pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">{{ app.candidate.first_name }} {{ app.candidate.last_name }}</div>
+                                <div class="small text-muted">{{ app.candidate.email }}</div>
+                                <div class="small text-muted">{{ app.candidate.profile.phone }}</div>
+                            </td>
+                            <td class="text-muted">{{ app.applied|date:"M d, Y" }}</td>
+                            <td>
+                                {% if app.resume %}
+                                    <a href="{{ app.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill"><i class="bi bi-file-earmark-pdf me-1"></i>View PDF</a>
+                                {% else %}
+                                    <span class="text-muted">No resume</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if app.status == 'A' %}
+                                    <span class="badge bg-secondary badge-custom">Applied</span>
+                                {% elif app.status == 'S' %}
+                                    <span class="badge bg-success badge-custom">Shortlisted</span>
+                                {% elif app.status == 'R' %}
+                                    <span class="badge bg-danger badge-custom">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td class="pe-4">
+                                <form method="post" class="d-flex align-items-center gap-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="application_id" value="{{ app.pk }}">
+                                    <select name="status" class="form-select form-select-sm w-auto rounded-pill" onchange="this.form.submit()">
+                                        {% for key, value in status_choices %}
+                                            <option value="{{ key }}" {% if app.status == key %}selected{% endif %}>{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                        {% if app.cover_note %}
+                        <tr>
+                            <td colspan="5" class="px-4 py-3 bg-light">
+                                <strong>Cover Note:</strong>
+                                <p class="mb-0 text-muted small mt-1">{{ app.cover_note|linebreaks }}</p>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-people display-4 d-block mb-3"></i>
+                                No applicants yet for this position.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
