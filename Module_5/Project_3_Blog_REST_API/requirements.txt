@@ -1,0 +1,15 @@
+# ============================================================================
+#  PROJECT 3 — Blog REST API
+#  Python package requirements
+# ----------------------------------------------------------------------------
+#  Install all of these in one shot with:
+#       pip install -r requirements.txt
+#
+#  Versions are pinned so every student who clones this repo gets EXACTLY the
+#  same libraries and the project behaves identically on every computer.
+# ============================================================================
+
+Django==4.2.16                  # The web framework that runs the whole site
+djangorestframework==3.15.2     # Turns Django into a JSON REST API toolkit (DRF)
+django-filter==24.3             # Adds ?category= style filtering
+drf-spectacular==0.27.2         # Auto-generates the Swagger / OpenAPI documentation

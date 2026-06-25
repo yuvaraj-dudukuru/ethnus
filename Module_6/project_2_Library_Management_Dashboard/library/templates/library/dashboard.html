@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+{% load static %}
+<!--
+  ============================================================================
+   dashboard.html — the SHELL of the Library Management Dashboard (Module 6)
+  ----------------------------------------------------------------------------
+   Like every Module-6 page, this HTML only draws the STATIC FRAME:
+       - a login bar
+       - three tabs: Books, Loans, Members
+       - a MULTI-FILTER BAR over the books (search + author + availability)
+       - empty tables, a spinner, a flash strip and empty/error placeholders
+       - an "Issue book" pop-up (modal)
+
+   It holds NO data. Every row, badge and message is built at runtime by
+   JavaScript (static/js/dashboard.js), which talks to the Module-5 REST API.
+
+   THE NEW IDEA in this project: the filter bar has THREE inputs (a search box,
+   an author dropdown and an availability dropdown). JavaScript keeps their
+   values in one small "state" object and, after a short pause, turns them into
+   ONE request such as:
+        GET /api/books/?search=harry&author=2&available=true&page=1
+   Watch it happen in your browser's Network tab.
+
+   Bootstrap 5 (from a CDN) provides the styling, the tabs and the modal.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management Dashboard</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <!-- ================= PAGE HEADING ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">📚 Library Management Dashboard</h1>
+        <a href="/api/docs/" target="_blank" class="btn btn-sm btn-outline-secondary">
+            API Docs
+        </a>
+    </div>
+
+    <!-- ================= LOGIN BAR =================
+         Browsing/filtering BOOKS works for everyone. But issuing & returning
+         books, and viewing Loans & Members, needs you to log in as a STAFF
+         user. Log in with:  admin / admin
+    -->
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form id="login-form" class="row g-2 align-items-center">
+                <div class="col-auto fw-semibold">Staff login:</div>
+                <div class="col-auto">
+                    <input type="text" id="login-username" class="form-control form-control-sm"
+                           placeholder="username (admin)" autocomplete="username">
+                </div>
+                <div class="col-auto">
+                    <input type="password" id="login-password" class="form-control form-control-sm"
+                           placeholder="password (admin)" autocomplete="current-password">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary">Login</button>
+                </div>
+            </form>
+            <div id="logged-in-bar" class="d-none align-items-center gap-2">
+                <span class="text-success fw-semibold">✓ Logged in as
+                    <span id="current-user"></span></span>
+                <button id="logout-btn" class="btn btn-sm btn-outline-danger">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FLASH MESSAGE AREA ================= -->
+    <div id="flash" class="alert d-none" role="alert"></div>
+
+    <!-- ================= TABS ================= -->
+    <ul class="nav nav-tabs mb-3" id="tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="books-tab" data-bs-toggle="tab"
+                    data-bs-target="#books-pane" type="button" role="tab">📖 Books</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="loans-tab" data-bs-toggle="tab"
+                    data-bs-target="#loans-pane" type="button" role="tab">🔄 Loans</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="members-tab" data-bs-toggle="tab"
+                    data-bs-target="#members-pane" type="button" role="tab">🧑‍🎓 Members</button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- ================================================================
+             TAB 1 — BOOKS  (with the multi-filter bar)
+        ================================================================= -->
+        <div class="tab-pane fade show active" id="books-pane" role="tabpanel">
+
+            <!-- ===== MULTI-FILTER BAR =====
+                 Three inputs that combine into ONE query to /api/books/.
+            -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label class="form-label small mb-1">Search (title or ISBN)</label>
+                            <input type="text" id="f-search" class="form-control"
+                                   placeholder="e.g. harry, 1984, 978-0001…">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1">Author</label>
+                            <!-- Filled with real authors by JavaScript on load. -->
+                            <select id="f-author" class="form-select">
+                                <option value="">All authors</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small mb-1">Availability</label>
+                            <select id="f-available" class="form-select">
+                                <option value="">All books</option>
+                                <option value="true">Available only</option>
+                                <option value="false">Out of stock only</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-grid">
+                            <button id="f-clear" class="btn btn-outline-secondary"
+                                    title="Clear all filters">Clear</button>
+                        </div>
+                    </div>
+                    <small class="text-muted">
+                        All three filters combine into one request to
+                        <code>/api/books/</code>.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Status placeholders for the books table -->
+            <div id="books-spinner" class="text-center my-4 d-none">
+                <div class="spinner-border text-primary" role="status"></div>
+                <div class="text-muted mt-2">Loading books…</div>
+            </div>
+            <div id="books-empty" class="alert alert-secondary text-center d-none">
+                No books match your filters.
+            </div>
+            <div id="books-error" class="alert alert-danger text-center d-none">
+                ⚠️ Could not load books from the server.
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle bg-white">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Copies</th>
+                            <th>Status</th>
+                            <th style="width:110px">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="books-rows"><!-- filled by JS --></tbody>
+                </table>
+            </div>
+
+            <!-- Pagination for books -->
+            <div class="d-flex justify-content-between align-items-center">
+                <button id="books-prev" class="btn btn-outline-primary" disabled>← Previous</button>
+                <span id="books-pageinfo" class="text-muted">Page 1</span>
+                <button id="books-next" class="btn btn-outline-primary" disabled>Next →</button>
+            </div>
+        </div>
+
+        <!-- ================================================================
+             TAB 2 — LOANS (issues). Staff only.
+        ================================================================= -->
+        <div class="tab-pane fade" id="loans-pane" role="tabpanel">
+            <!-- Shown when you are NOT logged in. -->
+            <div id="loans-locked" class="alert alert-warning">
+                🔒 Please log in as staff (admin / admin) to view loans.
+            </div>
+
+            <div id="loans-content" class="d-none">
+                <p class="text-muted">
+                    Every borrowing record. Click <strong>Return</strong> when a member
+                    brings a book back — it puts a copy back on the shelf and stops the fine.
+                </p>
+                <div id="loans-spinner" class="text-center my-4 d-none">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+                <div id="loans-empty" class="alert alert-secondary text-center d-none">
+                    No loans yet. Issue a book from the Books tab.
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle bg-white">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Book</th>
+                                <th>Member</th>
+                                <th>Due date</th>
+                                <th>Status</th>
+                                <th>Fine</th>
+                                <th style="width:110px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loans-rows"><!-- filled by JS --></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================
+             TAB 3 — MEMBERS. Staff only.
+        ================================================================= -->
+        <div class="tab-pane fade" id="members-pane" role="tabpanel">
+            <div id="members-locked" class="alert alert-warning">
+                🔒 Please log in as staff (admin / admin) to view members.
+            </div>
+
+            <div id="members-content" class="d-none">
+                <div id="members-spinner" class="text-center my-4 d-none">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle bg-white">
+                        <thead class="table-dark">
+                            <tr><th>Name</th><th>Email</th><th>Joined</th></tr>
+                        </thead>
+                        <tbody id="members-rows"><!-- filled by JS --></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /tab-content -->
+</div><!-- /container -->
+
+<!-- ================= ISSUE-BOOK MODAL =================
+     A pop-up that opens when you click "Issue" on a book row. You pick the
+     member and the due date, then JavaScript sends
+        POST /api/books/{id}/issue/   {member, due_date}
+-->
+<div class="modal fade" id="issue-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Issue book: <span id="issue-book-title"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="issue-form">
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Member</label>
+                <!-- Filled with members by JS after you log in. -->
+                <select id="issue-member" class="form-select" required>
+                    <option value="">Choose a member…</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Due date</label>
+                <input type="date" id="issue-due" class="form-control" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Confirm issue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS bundle (needed for the tabs and the modal to work). -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Our dashboard logic. Loaded last so all elements above already exist. -->
+<script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

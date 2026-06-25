@@ -1,0 +1,26 @@
+# ============================================================================
+#  .gitignore — files Git should NOT upload to GitHub
+# ----------------------------------------------------------------------------
+#  These are generated on each computer and don't belong in the shared repo.
+#  Every student regenerates them locally by following the README.
+# ============================================================================
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# The local SQLite database (each student builds their own with "migrate")
+db.sqlite3
+
+# Uploaded resume files (created at runtime when candidates apply)
+media/
+
+# Virtual environment folders
+venv/
+env/
+.venv/
+
+# Editor / OS junk
+.vscode/
+.idea/
+.DS_Store

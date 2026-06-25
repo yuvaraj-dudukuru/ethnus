@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+{% load static %}
+<!--
+  ============================================================================
+   dashboard.html — the SHELL of the Student Management Dashboard (Module 6)
+  ----------------------------------------------------------------------------
+   IMPORTANT IDEA: this HTML file is almost "empty" on purpose.
+
+   It only draws the STATIC FRAME of the page:
+       - a login bar
+       - a search box
+       - an "Add student" form
+       - an EMPTY table (just the header row + an empty <tbody>)
+       - a spinner, a flash-message area, and empty/error placeholders
+       - pagination buttons
+
+   It contains NO student data. Every student row, every page number, every
+   success/error message is created at runtime by JavaScript (static/js/
+   dashboard.js), which talks to the REST API we built in Module 5.
+
+   This is the core lesson of Module 6: the server sends JSON, and the browser
+   builds the page. Open your browser's Network tab while using this page to
+   watch the AJAX requests happen.
+
+   Bootstrap 5 (loaded from a CDN) is used only to make the plain HTML look
+   tidy — it is not required for the logic to work.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Makes the layout responsive on phones/tablets. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management Dashboard</title>
+
+    <!-- Bootstrap 5 CSS (CDN). Gives us the nice cards, buttons and table. -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <!-- ================= PAGE HEADING ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">🎓 Student Management Dashboard</h1>
+        <a href="/api/docs/" target="_blank" class="btn btn-sm btn-outline-secondary">
+            API Docs
+        </a>
+    </div>
+
+    <!-- ================= LOGIN BAR =================
+         Reading the student list works for everyone. But ADDING, EDITING or
+         DELETING a student requires you to be logged in (this rule comes from
+         the Module-5 API). Logging in here asks the API for a "token" and
+         remembers it, so the JavaScript can prove who you are on every write.
+         Log in with:  admin / admin
+    -->
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <!-- Shown when you are LOGGED OUT: the small login form. -->
+            <form id="login-form" class="row g-2 align-items-center">
+                <div class="col-auto fw-semibold">Login to edit:</div>
+                <div class="col-auto">
+                    <input type="text" id="login-username" class="form-control form-control-sm"
+                           placeholder="username (admin)" autocomplete="username">
+                </div>
+                <div class="col-auto">
+                    <input type="password" id="login-password" class="form-control form-control-sm"
+                           placeholder="password (admin)" autocomplete="current-password">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary">Login</button>
+                </div>
+            </form>
+
+            <!-- Shown when you are LOGGED IN (JavaScript flips between the two). -->
+            <div id="logged-in-bar" class="d-none align-items-center gap-2">
+                <span class="text-success fw-semibold">✓ Logged in as
+                    <span id="current-user"></span></span>
+                <button id="logout-btn" class="btn btn-sm btn-outline-danger">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FLASH MESSAGE AREA =================
+         A single reusable strip where JavaScript shows green "success" or red
+         "error" messages (e.g. "Student added", "Login failed"). It starts
+         hidden and is filled in by showFlash() in dashboard.js.
+    -->
+    <div id="flash" class="alert d-none" role="alert"></div>
+
+    <!-- ================= ADD-STUDENT FORM =================
+         Submitting this form does NOT reload the page. JavaScript intercepts
+         the submit, sends the data to the API as JSON, and (on success) adds
+         the new student to the table.
+    -->
+    <div class="card mb-3">
+        <div class="card-header fw-semibold">Add a new student</div>
+        <div class="card-body">
+            <form id="add-form" class="row g-2">
+                <div class="col-sm-2">
+                    <input type="number" id="add-roll" class="form-control"
+                           placeholder="Roll" required>
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" id="add-name" class="form-control"
+                           placeholder="Full name" required>
+                </div>
+                <div class="col-sm-3">
+                    <input type="email" id="add-email" class="form-control"
+                           placeholder="name@college.edu" required>
+                </div>
+                <div class="col-sm-1">
+                    <input type="number" id="add-marks" class="form-control"
+                           placeholder="Marks" min="0" value="0" required>
+                </div>
+                <div class="col-sm-2">
+                    <!-- Filled with the real departments by JavaScript on load. -->
+                    <select id="add-department" class="form-select" required>
+                        <option value="">Dept…</option>
+                    </select>
+                </div>
+                <div class="col-sm-1 d-grid">
+                    <button type="submit" class="btn btn-success">Add</button>
+                </div>
+            </form>
+            <small class="text-muted">
+                Tip: the API only accepts emails ending in <code>@college.edu</code>.
+            </small>
+        </div>
+    </div>
+
+    <!-- ================= SEARCH BOX =================
+         As you type, JavaScript waits a moment (this is called "debouncing")
+         and then asks the API for matching students. It searches name, email
+         and department name.
+    -->
+    <div class="input-group mb-3">
+        <span class="input-group-text">🔍</span>
+        <input type="text" id="search" class="form-control"
+               placeholder="Search by name, email or department…">
+    </div>
+
+    <!-- ================= STATUS PLACEHOLDERS =================
+         Only ONE of these is visible at a time, controlled by JavaScript:
+           - spinner  : while a request is in flight
+           - empty    : when the search/list returns zero students
+           - error    : when a request fails (e.g. server down)
+    -->
+    <div id="spinner" class="text-center my-4 d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading…</span>
+        </div>
+        <div class="text-muted mt-2">Loading students…</div>
+    </div>
+
+    <div id="empty-state" class="alert alert-secondary text-center d-none">
+        No students found.
+    </div>
+
+    <div id="error-state" class="alert alert-danger text-center d-none">
+        ⚠️ Something went wrong while talking to the server.
+    </div>
+
+    <!-- ================= STUDENT TABLE =================
+         The header row is fixed. The <tbody id="student-rows"> starts EMPTY —
+         JavaScript fills it with one <tr> per student returned by the API.
+    -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle bg-white">
+            <thead class="table-dark">
+                <tr>
+                    <th>Roll</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th style="width:140px">Marks</th>
+                    <th style="width:90px">Action</th>
+                </tr>
+            </thead>
+            <tbody id="student-rows">
+                <!-- Rows are inserted here by dashboard.js -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ================= PAGINATION CONTROLS =================
+         The API returns students 10 at a time, plus a total "count" and links
+         to the next/previous page. JavaScript uses that information to enable
+         or disable these buttons and to show "Page X of Y".
+    -->
+    <div class="d-flex justify-content-between align-items-center">
+        <button id="prev-btn" class="btn btn-outline-primary" disabled>← Previous</button>
+        <span id="page-info" class="text-muted">Page 1</span>
+        <button id="next-btn" class="btn btn-outline-primary" disabled>Next →</button>
+    </div>
+
+</div><!-- /container -->
+
+<!--
+  Load our JavaScript LAST, just before </body>, so that all the HTML elements
+  above already exist by the time the script runs. The Django "static" template
+  tag below turns the path into the correct /static/js/dashboard.js URL.
+-->
+<script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

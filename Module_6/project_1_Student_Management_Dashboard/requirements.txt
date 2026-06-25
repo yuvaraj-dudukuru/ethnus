@@ -1,0 +1,16 @@
+# ============================================================================
+#  PROJECT 1 — Student Management REST API
+#  Python package requirements
+# ----------------------------------------------------------------------------
+#  Install all of these in one shot with:
+#       pip install -r requirements.txt
+#
+#  Each line is "package==version". Pinning versions means every student who
+#  clones this repo gets EXACTLY the same libraries, so the project behaves
+#  identically on every computer.
+# ============================================================================
+
+Django==4.2.16                  # The web framework that runs the whole site
+djangorestframework==3.15.2     # Turns Django into a JSON REST API toolkit (DRF)
+django-filter==24.3             # Adds ?department=&min_marks= style filtering
+drf-spectacular==0.27.2         # Auto-generates the Swagger / OpenAPI documentation
