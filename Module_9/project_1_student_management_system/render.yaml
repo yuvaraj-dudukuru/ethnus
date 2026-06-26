@@ -1,0 +1,23 @@
+# render.yaml — one-click Render Blueprint: web service + Postgres database.
+services:
+  - type: web
+    name: project_1_student_management_system
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn campushub.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: project_1_student_management_system-db
+          property: connectionString
+
+databases:
+  - name: project_1_student_management_system-db
+    plan: free

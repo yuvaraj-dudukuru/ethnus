@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Shop &middot; ShopCart{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>ShopCart store</h1>
+  <p>Browse products, add to cart and check out. <span id="cart-badge" class="badge ok">Cart: 0</span></p>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search products…">
+    <select id="cat-filter"><option value="">All categories</option></select>
+    <select id="sort-price">
+      <option value="">Sort</option>
+      <option value="min">Price: any min</option>
+    </select>
+    <input id="max-price" type="number" placeholder="Max price" style="width:120px">
+  </div>
+  <div class="grid" id="products"><p class="empty">Loading…</p></div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card">
+  <h2>Your cart</h2>
+  <div id="cart"><p class="empty">Empty.</p></div>
+  <p class="price" id="cart-total"></p>
+  <button class="btn primary" id="checkout-btn" disabled>Checkout</button>
+  <span id="checkout-msg" class="muted"></span>
+</div>
+{% else %}
+<div class="card"><p class="muted">Log in (shopper1 / shopper) to start a cart.</p></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};</script>
+<script src="{% static 'js/store.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Jobs &middot; CareerHub{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>CareerHub job board</h1>
+  <p>{% if user.is_authenticated %}You are signed in as <b>{{ user.username }}</b>
+     ({{ user.profile.role }}).{% else %}Browse jobs. Log in to apply or post.{% endif %}</p>
+</div>
+
+{% if user.is_authenticated and user.profile.role == "recruiter" %}
+<div class="card">
+  <h2>Post a job</h2>
+  <form id="post-form">
+    <div class="grid">
+      <label>Title<input name="title" required></label>
+      <label>Company<input name="company" required></label>
+      <label>Location<input name="location" required></label>
+      <label>Type
+        <select name="type">
+          <option value="FT">Full-time</option><option value="PT">Part-time</option>
+          <option value="CT">Contract</option><option value="IN">Internship</option>
+        </select>
+      </label>
+      <label>Salary<input name="salary" type="number"></label>
+    </div>
+    <label>Description<textarea name="description" rows="3" required></textarea></label>
+    <button class="btn ok" type="submit">Publish</button>
+    <span id="post-msg" class="muted"></span>
+  </form>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search title / company…">
+    <input id="loc" placeholder="Location">
+    <select id="type">
+      <option value="">Any type</option>
+      <option value="FT">Full-time</option><option value="PT">Part-time</option>
+      <option value="CT">Contract</option><option value="IN">Internship</option>
+    </select>
+  </div>
+  <div id="jobs"><p class="empty">Loading…</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.ROLE = "{% if user.is_authenticated %}{{ user.profile.role }}{% endif %}";
+  window.USERNAME = "{{ user.username }}";
+</script>
+<script src="{% static 'js/jobs.js' %}"></script>
+{% endblock %}

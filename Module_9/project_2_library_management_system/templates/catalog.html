@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Catalog &middot; Bibliotheca{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Library catalog</h1>
+  <p>Browse books, borrow and return. Stock updates live.</p>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search title / ISBN / author…">
+    <label style="margin:0"><input type="checkbox" id="only-available" style="width:auto"> Available only</label>
+  </div>
+  <div class="grid" id="books"><p class="empty">Loading…</p></div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card">
+  <h2>My loans</h2>
+  <table>
+    <thead><tr><th>Book</th><th>Due</th><th>Status</th><th>Fine</th></tr></thead>
+    <tbody id="loans"><tr><td colspan="4" class="empty">—</td></tr></tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><p class="muted">Log in (member1 / member) to borrow books.</p></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};</script>
+<script src="{% static 'js/catalog.js' %}"></script>
+{% endblock %}

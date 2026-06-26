@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Courses &middot; LearnSpace{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>LearnSpace courses</h1>
+  <p>Enrol, watch lessons and track your progress.</p>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search courses…">
+  </div>
+  <div class="grid" id="courses"><p class="empty">Loading…</p></div>
+</div>
+
+<div class="card" id="detail" style="display:none">
+  <button class="btn small" id="back">&larr; Back to courses</button>
+  <h2 id="d-title"></h2>
+  <p class="muted" id="d-meta"></p>
+  {% if user.is_authenticated %}
+  <div class="progress" style="margin:10px 0"><span id="d-bar" style="width:0%"></span></div>
+  <p class="muted" id="d-pct"></p>
+  {% endif %}
+  <div id="lessons"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};</script>
+<script src="{% static 'js/lms.js' %}"></script>
+{% endblock %}

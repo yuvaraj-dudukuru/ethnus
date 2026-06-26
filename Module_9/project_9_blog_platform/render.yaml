@@ -1,0 +1,23 @@
+# render.yaml — one-click Render Blueprint: web service + Postgres database.
+services:
+  - type: web
+    name: project_9_blog_platform
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn inkwell.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: project_9_blog_platform-db
+          property: connectionString
+
+databases:
+  - name: project_9_blog_platform-db
+    plan: free

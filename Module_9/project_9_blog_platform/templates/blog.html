@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inkwell Blog{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Inkwell</h1>
+  <p>Read, like and comment on posts.{% if user.is_authenticated %} Write your own below.{% endif %}</p>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card">
+  <h2>New post</h2>
+  <form id="new-post">
+    <label>Title<input name="title" required></label>
+    <label>Body (markdown: **bold**, *italic*, `code`)
+      <textarea name="body" id="body" rows="4" required></textarea></label>
+    <div class="card" style="background:var(--soft)"><b>Preview:</b><div id="preview"></div></div>
+    <label>Status
+      <select name="status"><option value="PUBLISHED">Publish</option><option value="DRAFT">Save as draft</option></select>
+    </label>
+    <button class="btn ok" type="submit">Save</button>
+    <span id="post-msg" class="muted"></span>
+  </form>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search posts…">
+  </div>
+  <div id="posts"><p class="empty">Loading…</p></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};</script>
+<script src="{% static 'js/blog.js' %}"></script>
+{% endblock %}

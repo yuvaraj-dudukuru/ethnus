@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Inventory &middot; StockRoom{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Stock dashboard</h1>
+  <p>Live quantities, low-stock alerts and movement history. Auto-refreshes.</p>
+</div>
+
+<div class="stat">
+  <div class="box"><b id="stat-products">–</b><span class="muted">Products</span></div>
+  <div class="box"><b id="stat-low">–</b><span class="muted">Low stock</span></div>
+  <div class="box"><b id="stat-units">–</b><span class="muted">Total units</span></div>
+</div>
+
+<div class="card">
+  <h2>Stock levels</h2>
+  <div id="chart"></div>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search name / SKU…">
+    <label style="margin:0"><input type="checkbox" id="only-low" style="width:auto"> Low stock only</label>
+  </div>
+  <table>
+    <thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Reorder</th><th>Status</th>
+    {% if user.is_authenticated %}<th>Actions</th>{% endif %}</tr></thead>
+    <tbody id="rows"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Recent movements</h2>
+  <tbody><table id="moves"></table></tbody>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};</script>
+<script src="{% static 'js/inventory.js' %}"></script>
+{% endblock %}

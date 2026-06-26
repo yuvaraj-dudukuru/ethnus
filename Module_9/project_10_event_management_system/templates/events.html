@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Events &middot; Evently{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Evently</h1>
+  <p>Discover events and grab your seat before they sell out.</p>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search events…">
+    <label style="margin:0"><input type="checkbox" id="upcoming" checked style="width:auto"> Upcoming only</label>
+  </div>
+  <div class="grid" id="events"><p class="empty">Loading…</p></div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card">
+  <h2>My events</h2>
+  <table>
+    <thead><tr><th>Event</th><th>Status</th></tr></thead>
+    <tbody id="mine"><tr><td colspan="2" class="empty">—</td></tr></tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><p class="muted">Log in (attendee1 / attendee) to register.</p></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};
+window.USERNAME = "{{ user.username }}";</script>
+<script src="{% static 'js/events.js' %}"></script>
+{% endblock %}

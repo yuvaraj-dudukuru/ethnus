@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Login &middot; MediCare Hospital{% endblock %}
+{% block content %}
+<div class="card auth-card">
+  <h1>Log in</h1>
+  {% if form.errors %}<div class="flash error">Wrong username or password.</div>{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <label>Username<input type="text" name="username" autofocus required></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button class="btn primary" type="submit">Log in</button>
+  </form>
+  <p class="muted">Demo admin: <code>admin</code> / <code>admin</code></p>
+</div>
+{% endblock %}

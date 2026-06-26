@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MediCare{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>MediCare</h1>
+  <p>Find a doctor and book an appointment.</p>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search doctor / specialization…">
+    <select id="dept"><option value="">All departments</option></select>
+  </div>
+  <div class="grid" id="doctors"><p class="empty">Loading…</p></div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="card">
+  <h2>My appointments</h2>
+  <table>
+    <thead><tr><th>Doctor</th><th>When</th><th>Status</th><th></th></tr></thead>
+    <tbody id="appts"><tr><td colspan="4" class="empty">—</td></tr></tbody>
+  </table>
+</div>
+{% else %}
+<div class="card"><p class="muted">Log in (patient1 / patient) to book appointments.</p></div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.LOGGED_IN = {{ user.is_authenticated|yesno:"true,false" }};</script>
+<script src="{% static 'js/clinic.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard &middot; CampusHub{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Student dashboard</h1>
+  <p>Search, filter and enrol students. Data is live from the REST API.</p>
+</div>
+
+<div class="stat" id="stats">
+  <div class="box"><b id="stat-total">–</b><span class="muted">Students</span></div>
+  <div class="box"><b id="stat-depts">–</b><span class="muted">Departments</span></div>
+  <div class="box"><b id="stat-avg">–</b><span class="muted">Average marks</span></div>
+</div>
+
+<div class="card">
+  <h2>Top 5 toppers</h2>
+  <div id="chart"></div>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <input class="grow" id="search" type="search" placeholder="Search name / email / department…">
+    <select id="dept-filter"><option value="">All departments</option></select>
+    {% if user.is_authenticated %}
+      <button class="btn primary" id="add-btn">+ Add student</button>
+    {% else %}
+      <a class="btn" href="{% url 'login' %}">Log in to add</a>
+    {% endif %}
+  </div>
+
+  {% if user.is_authenticated %}
+  <form id="add-form" class="card" style="display:none">
+    <div class="grid">
+      <label>Roll<input type="number" name="roll" required></label>
+      <label>Name<input type="text" name="name" required></label>
+      <label>Email (@college.edu)<input type="email" name="email" required></label>
+      <label>Marks<input type="number" name="marks" value="0" min="0" max="100"></label>
+      <label>Department<select name="department_id" id="add-dept"></select></label>
+    </div>
+    <button class="btn ok" type="submit">Save student</button>
+    <span id="add-msg" class="muted"></span>
+  </form>
+  {% endif %}
+
+  <table>
+    <thead>
+      <tr><th>Roll</th><th>Name</th><th>Email</th><th>Dept</th><th>Marks</th><th>Status</th></tr>
+    </thead>
+    <tbody id="rows"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
