@@ -1,0 +1,19 @@
+# ============================================================================
+#  render.yaml — deploy the portfolio as a Render Static Site (alternative to
+#  GitHub Pages). No build step: the repo root IS the published site.
+# ============================================================================
+services:
+  - type: web
+    name: portfolio
+    runtime: static
+    buildCommand: ""
+    staticPublishPath: .
+    routes:
+      # Pretty 404: serve 404.html for unknown paths.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY

@@ -1,0 +1,44 @@
+════════════════════════════════════════════════════════════════════
+  SIMULATED GitHub Actions log — what you see in the "Actions" tab
+════════════════════════════════════════════════════════════════════
+
+  ── A PASSING run (green ✔) ──────────────────────────────────────────
+
+  ✓ tests / test (push)                                       42s
+    ✓ Set up job
+    ✓ Check out code
+    ✓ Set up Python                       Python 3.12.3
+    ✓ Install dependencies                Successfully installed Django-4.2 ...
+    ✓ Check migrations                    No changes detected
+    ✓ Run tests
+        Creating test database for alias 'default'...
+        ...........................                          (27 tests)
+        ----------------------------------------------------------------
+        Ran 27 tests in 1.84s
+        OK
+    ✓ Complete job
+
+  RESULT on the PR:   ✓ All checks have passed   →  [ Merge pull request ] enabled
+
+
+  ── A FAILING run (red ✗, from the "break a test" demo) ──────────────
+
+  ✗ tests / test (pull_request)                               39s
+    ✓ Install dependencies
+    ✗ Run tests
+        ======================================================================
+        FAIL: test_create_student_returns_201 (students.tests.StudentAPITest)
+        ----------------------------------------------------------------------
+        AssertionError: 500 != 201
+        ----------------------------------------------------------------------
+        Ran 27 tests in 1.79s
+        FAILED (failures=1)
+        Error: Process completed with exit code 1.
+
+  RESULT on the PR:   ✗ Some checks were not successful
+                      🔒 Merging is blocked — required check "test" failed
+
+════════════════════════════════════════════════════════════════════
+  The whole point: RED blocks the merge, GREEN allows it. Automatically.
+  No human has to remember to run the tests — the robot always does.
+════════════════════════════════════════════════════════════════════

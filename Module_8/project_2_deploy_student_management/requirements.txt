@@ -1,0 +1,14 @@
+# ============================================================================
+#  Student Management System (CampusHub) — pinned production dependencies
+# ============================================================================
+Django==5.2.6
+gunicorn==23.0.0
+whitenoise==6.8.2
+dj-database-url==2.3.0
+psycopg2-binary==2.9.10
+python-dotenv==1.0.1
+Pillow==11.0.0                # required by ImageField (student photos)
+
+# --- Persistent media on S3 (only needed when USE_S3=True) ---
+django-storages==1.14.4
+boto3==1.35.49

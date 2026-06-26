@@ -1,0 +1,47 @@
+# ─── GitHub Actions CI workflow (Project 4) ───
+# Save this to .github/workflows/tests.yml in your repo.
+# It runs your Django/DRF test suite automatically on every push and PR.
+
+name: tests
+
+# When should this run?
+on:
+  push:
+    branches: ["**"]        # every branch
+  pull_request:
+    branches: [main]        # and every PR targeting main
+
+jobs:
+  test:                     # ← this job name is what you require in branch rules
+    runs-on: ubuntu-latest  # a fresh cloud machine, thrown away after
+
+    steps:
+      # 1. Get your code onto the runner
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # 2. Install the Python version you develop on
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"      # speeds up repeat runs
+
+      # 3. Install your dependencies (NOT the venv — the list)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. (Optional) sanity-check migrations are complete
+      - name: Check migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      # 5. THE GATE — run the APITestCase suite. Non-zero exit = red ✗ = PR blocked.
+      - name: Run tests
+        env:
+          # SQLite needs nothing, but if your settings read a SECRET_KEY,
+          # provide a throwaway one for CI:
+          SECRET_KEY: "ci-test-not-a-real-secret"
+          DEBUG: "False"
+        run: python manage.py test --verbosity 2

@@ -1,0 +1,15 @@
+# ============================================================================
+#  Student Management REST API — pinned production dependencies
+# ============================================================================
+Django==5.2.6
+djangorestframework==3.16.0
+django-filter==24.3
+drf-spectacular==0.27.2
+django-cors-headers==4.6.0
+
+# --- Deployment stack ---
+gunicorn==23.0.0
+whitenoise==6.8.2
+dj-database-url==2.3.0
+psycopg2-binary==2.9.10
+python-dotenv==1.0.1

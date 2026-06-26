@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Student Management REST API (CampusHub)",
+    "description": "Module 8 deployment. Set the {{base_url}} variable to your live Render URL (e.g. https://student-rest-api.onrender.com) or http://127.0.0.1:8000 locally. Run 'Login' first to capture the token; it is saved to {{token}} automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Login (get token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+              "pm.test('got a token', function () { pm.expect(json.token).to.be.a('string'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/login/", "host": ["{{base_url}}"], "path": ["api", "login", ""] }
+      }
+    },
+    {
+      "name": "List students (public, 200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/api/students/", "host": ["{{base_url}}"], "path": ["api", "students", ""] }
+      }
+    },
+    {
+      "name": "Create student (auth required, 201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Token {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roll\": 201,\n  \"name\": \"New Student\",\n  \"email\": \"new@college.edu\",\n  \"marks\": 90,\n  \"department\": 1\n}"
+        },
+        "url": { "raw": "{{base_url}}/api/students/", "host": ["{{base_url}}"], "path": ["api", "students", ""] }
+      }
+    },
+    {
+      "name": "Create student WITHOUT token (401)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"roll\": 999\n}" },
+        "url": { "raw": "{{base_url}}/api/students/", "host": ["{{base_url}}"], "path": ["api", "students", ""] }
+      }
+    },
+    {
+      "name": "Toppers (custom action)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/api/students/toppers/", "host": ["{{base_url}}"], "path": ["api", "students", "toppers", ""] }
+      }
+    },
+    {
+      "name": "List departments",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/api/departments/", "host": ["{{base_url}}"], "path": ["api", "departments", ""] }
+      }
+    },
+    {
+      "name": "Logout (delete token)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Token {{token}}" }],
+        "url": { "raw": "{{base_url}}/api/logout/", "host": ["{{base_url}}"], "path": ["api", "logout", ""] }
+      }
+    }
+  ]
+}

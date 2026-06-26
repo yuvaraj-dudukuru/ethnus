@@ -1,0 +1,10 @@
+# ============================================================================
+#  Blog Application — pinned production dependencies
+#  Install:  pip install -r requirements.txt
+# ============================================================================
+Django==5.2.6                 # web framework
+gunicorn==23.0.0              # production WSGI server (the Start command)
+whitenoise==6.8.2             # serves compressed static files from the web process
+dj-database-url==2.3.0        # parses DATABASE_URL into Django's DATABASES config
+psycopg2-binary==2.9.10       # PostgreSQL driver (used on Render)
+python-dotenv==1.0.1          # loads a local .env file in development

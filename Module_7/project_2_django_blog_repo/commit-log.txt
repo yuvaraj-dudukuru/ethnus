@@ -1,0 +1,29 @@
+════════════════════════════════════════════════════════════════════
+  SIMULATED `git log --oneline --graph` — Module 4 blog, GitHub Flow
+  (TARGET to compare against. Note the squash-merged feature commits.)
+════════════════════════════════════════════════════════════════════
+
+$ git log --oneline --graph
+
+* a91f4c2 (HEAD -> main, origin/main) feat: add post categories (#6)
+* 7d3b8e0 fix: prevent duplicate slugs on post save (#5)
+* 2c6a1f9 feat: add post comments (#4)        ← squashed from 3 commits
+* e08b7d4 docs: write README with setup steps
+* 4f1c9a2 chore: add production .gitignore
+* 9b2e5d1 feat: initial Django blog
+
+────────────────────────────────────────────────────────────────────
+  Each "(#N)" commit on main is one SQUASH-MERGED pull request.
+  Before squashing, feature/comments looked like this on its branch:
+
+  $ git log --oneline feature/comments
+    c4d9a01 test: add comment submission test
+    b7e2f88 feat: render comments on post detail page
+    a1f0c63 feat: add Comment model and form
+                    │
+                    ▼  "Squash and merge"  →  becomes 2c6a1f9 on main
+
+  WHAT YOU SHOULD *NOT* SEE in this history:
+    ✗ venv/            ✗ db.sqlite3        ✗ .env / SECRET_KEY
+    ✗ __pycache__/     ✗ "added stuff" (untyped, vague messages)
+════════════════════════════════════════════════════════════════════

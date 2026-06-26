@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+{% load static %}
+<!--
+  ============================================================================
+   dashboard.html — the SHELL of the Inventory Management Dashboard (Module 6)
+  ----------------------------------------------------------------------------
+   Like every Module-6 page, this HTML only draws the STATIC FRAME:
+       - a login bar
+       - a toolbar (search, auto-refresh toggle, "last updated", refresh-now)
+       - an EMPTY stock table
+       - a spinner, a flash strip and empty/error placeholders
+       - an "Add / Edit product" pop-up (modal)
+
+   It holds NO products. Every row is built and KEPT UP TO DATE at runtime by
+   JavaScript (static/js/dashboard.js), which talks to the Module-5 REST API.
+
+   THE NEW IDEA in this project: "real-time-ish" updates by POLLING. Every 10
+   seconds the JavaScript re-fetches the product list and DIFFS the new numbers
+   against what is already on screen:
+       - if a product's STOCK changed, that cell briefly FLASHES
+         (green = went up, red = went down),
+       - rows whose stock is at/below a threshold AUTO-HIGHLIGHT as "low stock".
+   (For TRUE instant push you would use WebSockets via Django Channels; polling
+   is the simple version that needs no extra server software.)
+
+   Changing products (Add / Edit / Delete) is admin-only and works like the
+   CRUD in Project 1.
+
+   Bootstrap 5 (from a CDN) provides the styling and the modal.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management Dashboard</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+    <style>
+        /* The flash animation for a stock cell that just changed.
+           JavaScript adds .flash-up or .flash-down; the colour fades out. */
+        @keyframes flashUp   { from { background:#198754; color:#fff; } to {} }
+        @keyframes flashDown { from { background:#dc3545; color:#fff; } to {} }
+        .flash-up   { animation: flashUp   1.2s ease-out; }
+        .flash-down { animation: flashDown 1.2s ease-out; }
+        /* A small "live" dot that pulses while auto-refresh is on. */
+        .live-dot { height:10px; width:10px; border-radius:50%; background:#198754;
+                    display:inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <!-- ================= PAGE HEADING ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">📦 Inventory Management Dashboard</h1>
+        <a href="/api/docs/" target="_blank" class="btn btn-sm btn-outline-secondary">
+            API Docs
+        </a>
+    </div>
+
+    <!-- ================= LOGIN BAR =================
+         Anyone may VIEW the stock. Only an admin may add / edit / delete
+         products. Log in with:  admin / admin
+    -->
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form id="login-form" class="row g-2 align-items-center">
+                <div class="col-auto fw-semibold">Admin login:</div>
+                <div class="col-auto">
+                    <input type="text" id="login-username" class="form-control form-control-sm"
+                           placeholder="username (admin)" autocomplete="username">
+                </div>
+                <div class="col-auto">
+                    <input type="password" id="login-password" class="form-control form-control-sm"
+                           placeholder="password (admin)" autocomplete="current-password">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary">Login</button>
+                </div>
+            </form>
+            <div id="logged-in-bar" class="d-none align-items-center gap-2">
+                <span class="text-success fw-semibold">✓ Logged in as
+                    <span id="current-user"></span></span>
+                <button id="logout-btn" class="btn btn-sm btn-outline-danger">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FLASH MESSAGE AREA ================= -->
+    <div id="flash" class="alert d-none" role="alert"></div>
+
+    <!-- ================= TOOLBAR ================= -->
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text">🔍</span>
+                <input type="text" id="search" class="form-control"
+                       placeholder="Search products by name…">
+            </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-center gap-2 small text-muted">
+            <span id="live-dot" class="live-dot" title="Auto-refresh is on"></span>
+            <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" id="auto-toggle" checked>
+                <label class="form-check-label" for="auto-toggle">Auto-refresh (10s)</label>
+            </div>
+        </div>
+        <div class="col-md-3 text-md-end">
+            <button id="refresh-btn" class="btn btn-sm btn-outline-primary">↻ Refresh now</button>
+            <!-- The Add button only appears for admins (shown by JavaScript). -->
+            <button id="add-btn" class="btn btn-sm btn-success d-none">+ Add product</button>
+        </div>
+    </div>
+    <div class="small text-muted mb-2">
+        Last updated: <span id="last-updated">—</span> ·
+        rows at/below <strong id="low-threshold-label">?</strong> units are flagged
+        <span class="badge bg-warning text-dark">Low</span>.
+    </div>
+
+    <!-- ================= STATUS PLACEHOLDERS ================= -->
+    <div id="spinner" class="text-center my-4 d-none">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="text-muted mt-2">Loading inventory…</div>
+    </div>
+    <div id="empty-state" class="alert alert-secondary text-center d-none">
+        No products found.
+    </div>
+    <div id="error-state" class="alert alert-danger text-center d-none">
+        ⚠️ Could not load inventory from the server.
+    </div>
+
+    <!-- ================= STOCK TABLE =================
+         The header is fixed; <tbody id="rows"> is filled (and kept updated) by
+         JavaScript. Each poll DIFFS the new data against these rows.
+    -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-end" style="width:110px">Stock</th>
+                    <th>Status</th>
+                    <th style="width:150px">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="rows"><!-- filled by dashboard.js --></tbody>
+        </table>
+    </div>
+
+</div><!-- /container -->
+
+<!-- ================= ADD / EDIT PRODUCT MODAL ================= -->
+<div class="modal fade" id="product-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="product-modal-title">Add product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="product-form">
+        <div class="modal-body">
+            <div class="mb-2">
+                <label class="form-label">Name</label>
+                <input type="text" id="p-name" class="form-control" required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Category</label>
+                <select id="p-category" class="form-select" required>
+                    <option value="">Choose…</option>
+                </select>
+            </div>
+            <div class="row g-2">
+                <div class="col">
+                    <label class="form-label">Price</label>
+                    <input type="number" id="p-price" class="form-control"
+                           step="0.01" min="0" required>
+                </div>
+                <div class="col">
+                    <label class="form-label">Stock</label>
+                    <input type="number" id="p-stock" class="form-control"
+                           min="0" required>
+                </div>
+            </div>
+            <div class="mb-2 mt-2">
+                <label class="form-label">Description (optional)</label>
+                <textarea id="p-description" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS bundle (needed for the modal). -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

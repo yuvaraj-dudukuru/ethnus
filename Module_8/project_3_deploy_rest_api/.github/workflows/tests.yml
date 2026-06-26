@@ -1,0 +1,39 @@
+# ============================================================================
+#  CI/CD — run the API test suite on every push and pull request.
+#  A red check blocks the merge/deploy; a green check means it is safe to ship.
+#  Pair this with Render's "Auto-Deploy: only after CI passes" (or branch
+#  protection requiring this check) for a full green-gated CI/CD pipeline.
+# ============================================================================
+name: API Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Django system checks
+        run: python manage.py check
+
+      - name: Run the APITestCase suite
+        env:
+          SECRET_KEY: ci-test-secret-key-not-used-in-production-1234567890
+          DEBUG: "True"
+        run: python manage.py test --verbosity 2

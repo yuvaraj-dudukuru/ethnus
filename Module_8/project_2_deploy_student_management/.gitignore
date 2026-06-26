@@ -1,0 +1,21 @@
+# --- Secrets ---
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# --- Django ---
+staticfiles/
+# Uploaded media is environment-specific (ephemeral on Render / lives on S3).
+media/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# db.sqlite3 committed on purpose for an out-of-the-box local demo (see README).

@@ -1,0 +1,33 @@
+════════════════════════════════════════════════════════════════════
+  BRANCH DIAGRAM — Project 3 (team, protected main, merge conflict)
+════════════════════════════════════════════════════════════════════
+
+  Time ──────────────────────────────────────────────────────────────▶
+
+                  PR#13 (alice)                PR#14 (bob, conflict resolved)
+                    merges 1st                       merges 2nd
+                        │                                 │
+  main ──●────●────●────●─────────────────────────────────●────────▶
+         │    │   /│     \                               /│
+      init  CSV / │ alice/feature/                      / │
+        templates │   reports-link  ●─────────────────/  │
+                  │                                       │
+                  └─ bob/fix/nav-settings ●───●(merge main: CONFLICT)──●(resolved)
+                                          add  💥 both edited nav line  ✅ keep both
+                                        Settings
+
+  WHY THE CONFLICT:
+  ┌──────────────────────────────────────────────────────────────┐
+  │  alice/reports-link  →  edits nav line  →  merges to main FIRST │
+  │  bob/nav-settings    →  edits SAME line →  must merge main in   │
+  │       Git: "you both changed this line — humans decide"        │
+  │       Resolution: talk → keep both links → add → commit        │
+  └──────────────────────────────────────────────────────────────┘
+
+  PROTECTED MAIN (the team guardrail):
+  ┌──────────────────────────────────────────────────────────────┐
+  │  ✗ no direct push to main                                     │
+  │  ✓ PR required   ✓ 1 approval required   ✓ CI must be green   │
+  └──────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════

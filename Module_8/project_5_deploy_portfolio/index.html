@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ====================== SEO META (Module 3 lesson) ====================== -->
+  <title>Nihal Koona — Full-Stack Developer | Portfolio</title>
+  <meta name="description" content="Portfolio of Nihal Koona — Django & Python full-stack developer. Live, deployed projects: a blog, a student management system, a REST API, and an e-commerce store." />
+  <meta name="keywords" content="Django, Python, Full-Stack, REST API, Portfolio, Web Developer, PostgreSQL, Render" />
+  <meta name="author" content="Nihal Koona" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="canonical" href="https://yourname.dev/" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Nihal Koona — Full-Stack Developer" />
+  <meta property="og:description" content="Live, deployed Django projects: blog, student management, REST API, e-commerce." />
+  <meta property="og:url" content="https://yourname.dev/" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👨‍💻</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============================ NAV ============================ -->
+  <header class="nav">
+    <a href="#top" class="brand">NK<span>.</span></a>
+    <nav>
+      <a href="#projects">Projects</a>
+      <a href="#modules">Journey</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ============================ HERO ============================ -->
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">Full-Stack Developer · Django · Python</p>
+      <h1>Hi, I'm <span class="grad">Nihal Koona</span>.<br />I build &amp; <em>ship</em> web apps.</h1>
+      <p class="lead">
+        Eight modules of training, five live deployments. Everything below is a
+        <strong>real, running application</strong> — not a screenshot. Click any card to open it.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#projects">See live projects ↓</a>
+        <a class="btn ghost" href="#contact">Get in touch</a>
+      </div>
+      <ul class="stats">
+        <li><b>5</b> live deployments</li>
+        <li><b>8</b> modules completed</li>
+        <li><b>Django</b> · DRF · PostgreSQL</li>
+      </ul>
+    </section>
+
+    <!-- ============================ PROJECTS ============================ -->
+    <section id="projects" class="section">
+      <h2>🚀 Live Deployed Projects</h2>
+      <p class="muted">Each one is deployed on Render with PostgreSQL, HTTPS and WhiteNoise. Replace the <code>#</code> links with your real <code>.onrender.com</code> URLs after deploying.</p>
+
+      <div class="grid">
+        <a class="card" href="#" data-url="https://blog-app.onrender.com">
+          <div class="card-top blog">✍️</div>
+          <h3>Blog Application</h3>
+          <p>Posts, comments, auth and an admin panel. Django + Postgres + WhiteNoise.</p>
+          <span class="tags">Django · Postgres · Render</span>
+          <span class="open">Open live site →</span>
+        </a>
+
+        <a class="card" href="#" data-url="https://student-management.onrender.com">
+          <div class="card-top student">🎓</div>
+          <h3>Student Management</h3>
+          <p>CRUD students with photo uploads stored on Amazon S3 (persistent media).</p>
+          <span class="tags">Django · S3 · Media</span>
+          <span class="open">Open live site →</span>
+        </a>
+
+        <a class="card" href="#" data-url="https://student-rest-api.onrender.com/api/docs/">
+          <div class="card-top api">🔌</div>
+          <h3>REST API</h3>
+          <p>Django REST Framework with token auth, throttling, Swagger docs &amp; CI/CD.</p>
+          <span class="tags">DRF · CI/CD · Swagger</span>
+          <span class="open">Open API docs →</span>
+        </a>
+
+        <a class="card" href="#" data-url="https://ecommerce-store.onrender.com">
+          <div class="card-top shop">🛒</div>
+          <h3>E-Commerce Store</h3>
+          <p>Catalogue, cart, checkout, orders in Postgres, S3 images, HSTS &amp; Sentry.</p>
+          <span class="tags">Cart · Orders · Security</span>
+          <span class="open">Open live site →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============================ MODULES ============================ -->
+    <section id="modules" class="section alt">
+      <h2>🧭 The 8-Module Journey</h2>
+      <p class="muted">From first HTML page to production deployment.</p>
+      <ol class="timeline">
+        <li><b>Module 1–2</b> Python &amp; the fundamentals</li>
+        <li><b>Module 3</b> HTML/CSS &amp; this portfolio</li>
+        <li><b>Module 4</b> Django apps (blog, students, store, library, jobs)</li>
+        <li><b>Module 5</b> REST APIs with Django REST Framework</li>
+        <li><b>Module 6</b> Advanced features &amp; integrations</li>
+        <li><b>Module 7</b> Git, GitHub &amp; CI/CD workflows</li>
+        <li class="now"><b>Module 8</b> Production deployment — these live sites</li>
+      </ol>
+    </section>
+
+    <!-- ============================ ABOUT ============================ -->
+    <section id="about" class="section">
+      <h2>👋 About</h2>
+      <p class="about">
+        I'm a full-stack developer focused on the Python/Django stack. I enjoy taking an idea
+        all the way from a blank <code>models.py</code> to a secured, monitored app running in
+        production. The projects above were built and deployed end-to-end: environment-based
+        configuration, PostgreSQL, static/media handling, automated tests gating deploys, and
+        HTTPS by default.
+      </p>
+    </section>
+
+    <!-- ============================ CONTACT ============================ -->
+    <section id="contact" class="section alt">
+      <h2>📬 Let's talk</h2>
+      <p class="muted">Open to junior / full-stack developer roles.</p>
+      <div class="links">
+        <a class="btn primary" href="mailto:nihalkoona7@gmail.com">✉️ nihalkoona7@gmail.com</a>
+        <a class="btn ghost" href="https://github.com/your-username" rel="noopener">GitHub</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/your-handle" rel="noopener">LinkedIn</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>© <span id="year"></span> Nihal Koona · Built with HTML, CSS &amp; a lot of Django · Deployed on Render / GitHub Pages</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

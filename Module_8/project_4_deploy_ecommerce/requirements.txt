@@ -1,0 +1,17 @@
+# ============================================================================
+#  E-Commerce Store — pinned production dependencies (flagship deploy)
+# ============================================================================
+Django==5.2.6
+gunicorn==23.0.0
+whitenoise==6.8.2
+dj-database-url==2.3.0
+psycopg2-binary==2.9.10
+python-dotenv==1.0.1
+Pillow==11.0.0                # product image ImageField
+
+# --- Persistent media on S3 (USE_S3=True) ---
+django-storages==1.14.4
+boto3==1.35.49
+
+# --- Error tracking (set SENTRY_DSN to enable) ---
+sentry-sdk==2.17.0

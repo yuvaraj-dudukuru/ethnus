@@ -1,0 +1,29 @@
+════════════════════════════════════════════════════════════════════
+  BRANCH DIAGRAM — Project 1 (solo, one practice feature branch)
+════════════════════════════════════════════════════════════════════
+
+  Time ──────────────────────────────────────────────────────────────▶
+
+  main  ──●────●────●────●──────────────────────────────●  (always deployable)
+          │    │    │    │                              ▲
+       initial │  hero  README                          │ merge PR #1
+            .gitignore                                  │
+                                                        │
+  add-projects-section          ●───────────────────────┘
+                                 feat: add projects section
+
+
+  THE SOLO LOOP (each ● on main, before you branched):
+  ┌──────────────────────────────────────────────────────────────┐
+  │  edit ─▶ git add ─▶ git commit ─▶ git push                    │
+  └──────────────────────────────────────────────────────────────┘
+
+  THE BRANCH LOOP (the practice feature):
+  ┌──────────────────────────────────────────────────────────────┐
+  │  git switch -c add-projects-section                          │
+  │     edit ─▶ add ─▶ commit ─▶ push -u origin <branch>          │
+  │  open PR ─▶ self-review diff ─▶ merge ─▶ delete branch        │
+  │  git switch main ─▶ git pull                                  │
+  └──────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════

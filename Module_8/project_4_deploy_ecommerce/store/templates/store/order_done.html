@@ -1,0 +1,20 @@
+{% extends 'store/base.html' %}
+{% block title %}Order Successful{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center mt-5">
+        <div class="mb-4 text-success" style="font-size: 5rem;">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h2 class="mb-3">Thank you for your order!</h2>
+        <p class="lead">Your order #<strong>{{ order.id }}</strong> has been successfully placed.</p>
+        <p>You paid a total of <strong>${{ order.total }}</strong>.</p>
+        
+        <div class="mt-5">
+            <a href="{% url 'store:my_orders' %}" class="btn btn-primary me-2">View My Orders</a>
+            <a href="{% url 'store:product_list' %}" class="btn btn-outline-secondary">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

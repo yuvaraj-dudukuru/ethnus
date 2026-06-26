@@ -1,0 +1,67 @@
+# ============================================================================
+#  render.yaml — Blueprint for the E-Commerce store.
+#  Defines BOTH a production service and a staging service (deploy QA first,
+#  then promote to production) sharing the pattern but separate databases.
+# ============================================================================
+databases:
+  - name: shop-db
+    databaseName: shop
+    plan: free
+  - name: shop-staging-db
+    databaseName: shop_staging
+    plan: free
+
+services:
+  # --- PRODUCTION (tracks main) ---
+  - type: web
+    name: ecommerce-store
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ecommerce.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "ecommerce-store.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: shop-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: USE_S3
+        value: "False"
+      - key: SENTRY_DSN
+        sync: false            # paste your real DSN in the dashboard
+      - key: ENVIRONMENT
+        value: "production"
+
+  # --- STAGING (tracks the staging branch — QA before promoting) ---
+  - type: web
+    name: ecommerce-store-staging
+    runtime: python
+    plan: free
+    branch: staging
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ecommerce.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "ecommerce-store-staging.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: shop-staging-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: USE_S3
+        value: "False"
+      - key: ENVIRONMENT
+        value: "staging"

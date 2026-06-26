@@ -1,0 +1,19 @@
+# --- Secrets ---
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# --- Django ---
+staticfiles/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# db.sqlite3 committed for an out-of-the-box local demo (see README).

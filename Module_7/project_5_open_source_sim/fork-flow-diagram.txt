@@ -1,0 +1,47 @@
+════════════════════════════════════════════════════════════════════
+  FORK → UPSTREAM → PR  flow (Project 5) — the whole picture
+════════════════════════════════════════════════════════════════════
+
+  THE THREE COPIES
+  ────────────────
+        UPSTREAM                         ORIGIN (your fork)
+        THEM/repo  ───── 1. Fork ─────▶  YOU/repo
+        (original)                       (your GitHub copy)
+            │                                 │
+            │ 4. pull upstream main           │ 2. git clone
+            │    (stay in sync)               ▼
+            │                            ┌──────────────┐
+            │                            │  YOUR LAPTOP  │
+            │   3. git remote add        │  remotes:     │
+            └──────upstream──────────────│   origin   ⇄  │ YOUR fork
+                                         │   upstream ⇄  │ THEIR repo
+                                         └──────┬───────┘
+                                                │ 6. push origin <branch>
+                                                ▼
+                                         YOU/repo : fix/typo-in-readme
+                                                │
+                                  7. open Pull Request
+                                                │
+                                                ▼
+        ┌───────────────────────────────────────────────────┐
+        │  PR:  YOU/repo:fix/typo  ────────▶  THEM/repo:main │
+        │       (head, your fork)            (base, original)│
+        └───────────────────────────────────────────────────┘
+                                                │
+                            8. maintainer reviews ─▶ ✔ merge  🎉
+
+
+  COMMAND SEQUENCE
+  ────────────────
+   1. (web) Fork THEM/repo  →  YOU/repo
+   2. git clone https://github.com/YOU/repo.git
+   3. git remote add upstream https://github.com/THEM/repo.git
+   4. git switch main && git pull upstream main
+   5. git switch -c fix/typo-in-readme
+   6. ...edit... ; git commit -s -m "docs: fix typo" ; git push -u origin fix/typo-in-readme
+   7. (web) open PR  base: THEM/main   head: YOU/fix/typo-in-readme
+   8. respond to review → push fixes to SAME branch → merged
+
+  KEY RULE:  you PUSH to origin (your fork); you PR to upstream (their repo).
+             you can NEVER push directly to upstream.
+════════════════════════════════════════════════════════════════════

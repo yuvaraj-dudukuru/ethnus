@@ -1,0 +1,22 @@
+# --- Secrets (NEVER commit) ---
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# --- Django collected static (regenerated on every build) ---
+staticfiles/
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# NOTE: db.sqlite3 is intentionally committed here so the project runs locally
+# out-of-the-box with seeded data + the demo admin account. Production uses
+# PostgreSQL (DATABASE_URL), never this file. In a real product you would also
+# gitignore db.sqlite3.

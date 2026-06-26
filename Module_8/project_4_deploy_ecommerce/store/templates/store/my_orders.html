@@ -1,0 +1,44 @@
+{% extends 'store/base.html' %}
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">My Orders</h2>
+
+{% if orders %}
+<div class="row">
+    {% for order in orders %}
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Order #{{ order.id }}</span>
+                <span class="badge bg-{{ order.status|lower|default:'secondary' }}">{{ order.status }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="text-muted">Items:</h6>
+                        <ul class="list-unstyled">
+                            {% for item in order.items.all %}
+                            <li class="mb-2">
+                                {{ item.qty }}x <strong>{{ item.product.name }}</strong>
+                                <span class="text-muted ms-2">(${{ item.price_at_purchase }} each)</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-4 text-md-end border-start">
+                        <p class="text-muted mb-1">Date: {{ order.created|date:"M d, Y H:i" }}</p>
+                        <h5 class="mb-0">Total: <span class="text-success">${{ order.total }}</span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    You have not placed any orders yet. <a href="{% url 'store:product_list' %}" class="alert-link">Start shopping</a>.
+</div>
+{% endif %}
+{% endblock %}

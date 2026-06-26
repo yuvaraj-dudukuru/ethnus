@@ -1,0 +1,36 @@
+# ─── Production-grade Django .gitignore (Project 2) ───
+# Copy this to a file literally named ".gitignore" in your repo root,
+# and create it BEFORE your first `git add`.
+
+# Virtual environment — huge, OS-specific; rebuilt from requirements.txt
+venv/
+.venv/
+env/
+
+# Database — contains real data, must never be public
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Secrets & local config — NEVER commit these
+.env
+.env.*
+*.pem
+
+# User-uploaded media
+/media/
+
+# Static files collected for deployment (regenerated)
+/staticfiles/
+
+# Editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

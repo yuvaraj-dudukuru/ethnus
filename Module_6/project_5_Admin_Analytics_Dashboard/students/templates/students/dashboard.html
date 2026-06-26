@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+{% load static %}
+<!--
+  ============================================================================
+   dashboard.html — the SHELL of the Admin Analytics Dashboard (Module 6)
+  ----------------------------------------------------------------------------
+   Like every Module-6 page, this HTML only draws the STATIC FRAME:
+       - a date-range filter
+       - four stat CARDS (total / average / top scorer / active)
+       - three empty CHART canvases (bar, line, doughnut)
+       - SKELETON loaders that show while the data is being fetched
+
+   It holds NO numbers. Every card value and every chart is built at runtime by
+   JavaScript (static/js/dashboard.js), which makes ONE call to /api/stats/ and
+   spreads the result across the page.
+
+   THE NEW IDEA in this project: turning API JSON into chart data. The server
+   sends arrays like [{"label":"Physics","count":12}, ...]; the JavaScript MAPS
+   those into the two parallel arrays Chart.js wants — labels[] and data[].
+
+   Chart.js (from a CDN) draws the charts. Bootstrap (from a CDN) styles the page.
+  ============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Analytics Dashboard</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+    <style>
+        /* SKELETON loader: a soft grey shimmer shown while data loads. */
+        .skeleton {
+            background: linear-gradient(90deg,#e9ecef 25%,#f8f9fa 37%,#e9ecef 63%);
+            background-size: 400% 100%;
+            animation: shimmer 1.4s ease infinite;
+            border-radius: .375rem;
+        }
+        @keyframes shimmer { 0% { background-position: 100% 0; }
+                             100% { background-position: -100% 0; } }
+        .skeleton-line { height: 1.6rem; margin:.3rem 0; }
+        .chart-box { position: relative; height: 300px; }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+
+    <!-- ================= PAGE HEADING ================= -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">📊 Admin Analytics Dashboard</h1>
+        <a href="/api/docs/" target="_blank" class="btn btn-sm btn-outline-secondary">
+            API Docs
+        </a>
+    </div>
+
+    <!-- ================= DATE-RANGE FILTER =================
+         Changing the dates and clicking Apply re-fetches /api/stats/ with
+         ?start=&end= and rebuilds the WHOLE dashboard from the new numbers.
+    -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form id="filter-form" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Admitted from</label>
+                    <input type="date" id="f-start" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <label class="form-label small mb-1">Admitted to</label>
+                    <input type="date" id="f-end" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+                <div class="col-auto">
+                    <button type="button" id="f-reset" class="btn btn-outline-secondary">Reset</button>
+                </div>
+                <div class="col-auto ms-auto small text-muted align-self-center">
+                    Showing <strong id="range-label">all dates</strong>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= FLASH (errors) ================= -->
+    <div id="flash" class="alert alert-danger d-none" role="alert"></div>
+
+    <!-- ================= STAT CARDS ================= -->
+    <div class="row g-3 mb-4" id="cards">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center h-100"><div class="card-body">
+                <div class="text-muted small">Total students</div>
+                <div class="display-6 fw-bold js-card" id="card-total">
+                    <span class="skeleton skeleton-line d-inline-block" style="width:60px">&nbsp;</span>
+                </div>
+            </div></div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center h-100"><div class="card-body">
+                <div class="text-muted small">Average marks</div>
+                <div class="display-6 fw-bold js-card" id="card-average">
+                    <span class="skeleton skeleton-line d-inline-block" style="width:60px">&nbsp;</span>
+                </div>
+            </div></div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center h-100"><div class="card-body">
+                <div class="text-muted small">Top scorer</div>
+                <div class="h5 fw-bold mt-2 js-card" id="card-top">
+                    <span class="skeleton skeleton-line d-inline-block" style="width:100px">&nbsp;</span>
+                </div>
+            </div></div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center h-100"><div class="card-body">
+                <div class="text-muted small">Active students</div>
+                <div class="display-6 fw-bold js-card" id="card-active">
+                    <span class="skeleton skeleton-line d-inline-block" style="width:60px">&nbsp;</span>
+                </div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- ================= CHARTS ================= -->
+    <div class="row g-3">
+        <!-- BAR: students per department -->
+        <div class="col-lg-6">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="card-title">Students per department</h6>
+                <div id="sk-bar" class="skeleton" style="height:300px"></div>
+                <div class="chart-box d-none" id="box-bar"><canvas id="chart-bar"></canvas></div>
+            </div></div>
+        </div>
+        <!-- DOUGHNUT: pass / fail -->
+        <div class="col-lg-6">
+            <div class="card h-100"><div class="card-body">
+                <h6 class="card-title">Pass vs Fail (pass mark <span id="passmark">40</span>)</h6>
+                <div id="sk-doughnut" class="skeleton" style="height:300px"></div>
+                <div class="chart-box d-none" id="box-doughnut"><canvas id="chart-doughnut"></canvas></div>
+            </div></div>
+        </div>
+        <!-- LINE: admissions per month -->
+        <div class="col-12">
+            <div class="card"><div class="card-body">
+                <h6 class="card-title">Admissions per month</h6>
+                <div id="sk-line" class="skeleton" style="height:300px"></div>
+                <div class="chart-box d-none" id="box-line" style="height:320px">
+                    <canvas id="chart-line"></canvas>
+                </div>
+            </div></div>
+        </div>
+    </div>
+
+</div><!-- /container -->
+
+<!-- Chart.js (draws the bar / line / doughnut charts). -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- Our dashboard logic. -->
+<script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

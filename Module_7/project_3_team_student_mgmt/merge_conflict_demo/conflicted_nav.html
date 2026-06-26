@@ -1,0 +1,30 @@
+<!-- merge_conflict_demo/conflicted_nav.html
+     THIS IS WHAT GIT PRODUCES when Bob runs `git merge main` on his branch.
+     Git could NOT auto-merge because Alice and Bob both changed line 8.
+     It inserts CONFLICT MARKERS and asks the humans to choose.
+
+     Anatomy of the markers:
+       <<<<<<< HEAD        → everything below is what's on Bob's branch (HEAD)
+       =======            → the divider between the two versions
+       >>>>>>> main       → everything above is what main (Alice's merged work) has
+     You must DELETE all three marker lines and leave the agreed code. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Management Dashboard</title>
+</head>
+<body>
+  <nav class="navbar">
+<<<<<<< HEAD
+    <a href="/">Home</a> | <a href="/students">Students</a> | <a href="/settings">Settings</a>
+=======
+    <a href="/">Home</a> | <a href="/students">Students</a> | <a href="/reports">Reports</a>
+>>>>>>> main
+  </nav>
+
+  <main>
+    <!-- dashboard table is rendered here by dashboard.js -->
+  </main>
+</body>
+</html>

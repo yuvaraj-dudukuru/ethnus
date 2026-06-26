@@ -1,0 +1,31 @@
+════════════════════════════════════════════════════════════════════
+  SIMULATED `git log --oneline --graph` — Team Student Management
+  (TARGET. Notice: parallel authors, PR numbers, a merge-conflict commit.)
+════════════════════════════════════════════════════════════════════
+
+$ git log --oneline --graph
+
+*   c1a9f42 (HEAD -> main, origin/main) feat: add Settings link to nav (#14) [bob]
+|\
+| * 8f3d2b1 Merge branch 'main' into bob/fix/nav-settings  ← CONFLICT RESOLVED here
+| * 5e7a0c9 feat: add Settings link to dashboard nav
+* | 2b6c8e4 feat: add Reports link to dashboard nav (#13) [alice]
+|/
+* 9d4f1a7 feat: add department dropdown filter (#12) [alice]
+* 3c8b5e2 feat: add Export CSV button (#11) [bob]
+* a07e9d3 chore: add PR + issue templates and CODEOWNERS
+* 1f5c2b8 feat: initial student management dashboard
+
+────────────────────────────────────────────────────────────────────
+  Reading the graph:
+   • Two authors ([alice], [bob]) working in PARALLEL — the branches
+     fork off main and rejoin.
+   • #13 (Alice's Reports link) merged FIRST.
+   • Bob's branch then had to merge main in → conflict on the nav line →
+     the "Merge branch 'main'..." commit (8f3d2b1) is the resolution.
+   • Every (#N) is a peer-REVIEWED, APPROVED pull request into PROTECTED main.
+
+  PROOF OF TEAM WORKFLOW you should be able to point to:
+   ✔ protected main (no direct pushes)   ✔ 1 approval per PR
+   ✔ a "Request changes" review round     ✔ a resolved merge conflict
+════════════════════════════════════════════════════════════════════

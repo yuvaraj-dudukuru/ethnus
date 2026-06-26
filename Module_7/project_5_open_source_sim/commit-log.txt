@@ -1,0 +1,31 @@
+════════════════════════════════════════════════════════════════════
+  SIMULATED `git log` — your open-source contribution branch
+  (Note the Signed-off-by line the project's CONTRIBUTING.md required.)
+════════════════════════════════════════════════════════════════════
+
+$ git log --oneline fix/typo-in-readme
+  b4e1a09 docs: address review — clarify wording
+  7a2f5c8 docs: fix typo in installation section
+
+$ git show 7a2f5c8
+  commit 7a2f5c8...
+  Author: Your Name <you@example.com>
+  Date:   Fri Jun 26 2026
+
+      docs: fix typo in installation section
+
+      Corrects "instalation" -> "installation" in the Getting Started
+      section of README.md.
+
+      Closes #142
+      Signed-off-by: Your Name <you@example.com>      ← added by `git commit -s`
+
+────────────────────────────────────────────────────────────────────
+  WHAT THE WHOLE FLOW PRODUCES, end to end:
+   • A branch on YOUR fork (origin) named fix/typo-in-readme.
+   • A PR from YOU/repo:fix/typo-in-readme  →  THEM/repo:main.
+   • A second commit (b4e1a09) addressing the maintainer's review,
+     pushed to the SAME branch so the open PR updated automatically.
+   • On merge: a PUBLIC, MERGED contribution on your GitHub profile —
+     the single most credible line on a junior resume.
+════════════════════════════════════════════════════════════════════

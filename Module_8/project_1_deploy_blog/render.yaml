@@ -1,0 +1,30 @@
+# ============================================================================
+#  render.yaml — "Infrastructure as Code" Blueprint for Render.
+#  Push this file and Render can spin up the web service + database for you
+#  automatically (Dashboard → New → Blueprint).
+# ============================================================================
+databases:
+  - name: blog-db
+    databaseName: blog
+    plan: free
+
+services:
+  - type: web
+    name: blog-app
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true          # Render generates a strong random key
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "blog-app.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blog-db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.12.6"

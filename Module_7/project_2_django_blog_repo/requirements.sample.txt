@@ -1,0 +1,7 @@
+# ─── Example requirements.txt for the Module 4 blog ───
+# Generate YOUR real one with:  pip freeze > requirements.txt
+# Commit this file; never commit the venv/ folder it describes.
+
+Django>=4.2,<5.1
+Pillow>=10.0          # image fields for post thumbnails
+python-dotenv>=1.0    # load SECRET_KEY etc. from .env (keeps secrets out of git)

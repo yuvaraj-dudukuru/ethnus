@@ -1,0 +1,29 @@
+════════════════════════════════════════════════════════════════════
+  BRANCH DIAGRAM — Project 2 (solo GitHub Flow, branch per feature)
+════════════════════════════════════════════════════════════════════
+
+  Time ──────────────────────────────────────────────────────────────▶
+
+  main ──●──────●─────────────●─────────────────●──────────────●
+         │      │              \               /  \           /
+      initial .gitignore        \   PR #4     /    \  PR #5  /
+         + README                feature/    /      fix/   /
+                                  comments   ▼       slug- ▼
+                                   ●─●─●─────┘        ●────┘
+                                   (3 commits,
+                                    squashed → 1)
+
+  THE GITHUB FLOW LOOP (repeat per feature):
+  ┌──────────────────────────────────────────────────────────────┐
+  │  git switch main && git pull        # start fresh             │
+  │  git switch -c feature/<name>       # branch                  │
+  │  ...edit... add ─▶ commit (one logical unit each)             │
+  │  git push -u origin feature/<name>  # publish branch          │
+  │  open PR ─▶ describe (Closes #N) ─▶ self-review               │
+  │  Squash and merge ─▶ delete branch                            │
+  │  git switch main && git pull        # sync                    │
+  └──────────────────────────────────────────────────────────────┘
+
+  GOLDEN RULE:  main is ALWAYS runnable. Never push broken code to main.
+
+════════════════════════════════════════════════════════════════════

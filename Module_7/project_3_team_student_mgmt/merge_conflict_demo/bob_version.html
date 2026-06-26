@@ -1,0 +1,21 @@
+<!-- merge_conflict_demo/bob_version.html
+     BOB's branch: bob/fix/nav-settings
+     He ALSO edits the SAME nav line (to add a Settings link) at the
+     same time as Alice, from the same base. Because Alice merged first,
+     Bob's branch will CONFLICT when he tries to merge main in. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Management Dashboard</title>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/">Home</a> | <a href="/students">Students</a> | <a href="/settings">Settings</a>
+  </nav>
+
+  <main>
+    <!-- dashboard table is rendered here by dashboard.js -->
+  </main>
+</body>
+</html>

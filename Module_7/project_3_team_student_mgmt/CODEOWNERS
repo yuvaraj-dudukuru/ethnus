@@ -1,0 +1,19 @@
+# ─── CODEOWNERS (Project 3) ───
+# Save as .github/CODEOWNERS in your repo.
+# GitHub auto-requests a review from the owner when matching files change.
+# Replace the @handles with your teammates' real GitHub usernames.
+
+# Default: everyone reviews everything
+*                       @team-lead
+
+# The backend API + models
+/students/              @alice
+/students/api_views.py  @alice
+/students/models.py     @alice
+
+# Front-end dashboard
+/static/js/             @bob
+/templates/             @bob
+
+# CI / infra (added in Project 4)
+/.github/workflows/     @team-lead

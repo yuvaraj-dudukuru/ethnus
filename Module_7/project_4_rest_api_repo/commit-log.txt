@@ -1,0 +1,23 @@
+════════════════════════════════════════════════════════════════════
+  SIMULATED `git log --oneline` — Module 5 REST API, professionalized + CI
+════════════════════════════════════════════════════════════════════
+
+$ git log --oneline
+
+a4f9c21 (HEAD -> main, origin/main) ci: require green tests before merge (#9)
+7d2b8e0 docs: add endpoints table and Swagger link to README (#8)
+3e6a1f4 ci: add GitHub Actions test workflow (#7)     ← the CI file lands
+9c5d802 test: cover student create and delete endpoints (#6)
+1b8f3a7 test: cover student list and search endpoints (#5)
+6a2e9c0 feat: add pagination to student list (#4)
+4f7d1b9 feat: add token authentication to student endpoints (#3)
+2c9a5e3 chore: add MIT LICENSE
+8e1c4f6 chore: add .gitignore and requirements.txt
+0d3b7a2 feat: initial DRF student API
+
+────────────────────────────────────────────────────────────────────
+  Notice the `ci:` and `test:` commit types — Project 4 is about
+  AUTOMATION and PROOF, so those two dominate the recent history.
+  After commit a4f9c21, every future PR shows a ✓/✗ check and
+  cannot merge into main while red.
+════════════════════════════════════════════════════════════════════

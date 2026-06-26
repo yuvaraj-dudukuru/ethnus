@@ -1,0 +1,7 @@
+# ─── Example requirements.txt for the Module 5 DRF API ───
+# Generate YOUR real one with:  pip freeze > requirements.txt
+
+Django>=4.2,<5.1
+djangorestframework>=3.15
+drf-spectacular>=0.27        # auto-generates the /api/docs/ Swagger UI
+django-filter>=24.0          # ?department= / ?min_marks= filtering

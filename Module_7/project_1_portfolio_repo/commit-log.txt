@@ -1,0 +1,24 @@
+════════════════════════════════════════════════════════════════════
+  SIMULATED `git log --oneline` — what a healthy portfolio repo looks like
+  (This is a TARGET to compare your own history against. Yours will differ.)
+════════════════════════════════════════════════════════════════════
+
+$ git log --oneline --graph
+
+*   9f2c4a1 (HEAD -> main, origin/main) Merge pull request #1 from add-projects-section
+|\
+| * 7b1e8d0 feat: add projects showcase section
+|/
+* 3c5a9f4 docs: write README with live demo link
+* a82d610 style: improve mobile nav spacing
+* 1d4f7c2 feat: add hero section with intro and photo
+* 0e9b3a8 chore: add .gitignore
+* 5a1c0d7 feat: initial portfolio
+
+────────────────────────────────────────────────────────────────────
+ Notes:
+  • 7 commits, every message typed (feat/docs/style/chore) + imperative.
+  • The "Merge pull request #1" commit is from merging your ONE practice
+    feature branch — proof you ran the full PR loop, even solo.
+  • origin/main == main  →  your laptop and GitHub are in sync (you pushed).
+════════════════════════════════════════════════════════════════════

@@ -1,0 +1,22 @@
+# ─── Portfolio site .gitignore (Project 1) ───
+# Copy this to a file literally named ".gitignore" in your repo root.
+
+# Operating-system junk
+.DS_Store          # macOS Finder metadata
+Thumbs.db          # Windows thumbnail cache
+Desktop.ini
+
+# Node / build tools (only if you used npm, Vite, Sass, etc.)
+node_modules/
+dist/
+build/
+.cache/
+
+# Editor / IDE settings
+.vscode/
+.idea/
+*.swp
+
+# Environment files (never commit secrets — you'll learn why in Project 2)
+.env
+.env.local
